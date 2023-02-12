@@ -1,0 +1,13 @@
+# Scientific Libraries
+numpy
+scipy
+
+# Image Processing Library
+pillow
+
+# Emotion Recognition
+opencv-python
+deepface
+
+# Gesture Recognition
+mediapipe
