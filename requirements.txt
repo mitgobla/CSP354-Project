@@ -11,3 +11,6 @@ deepface
 
 # Gesture Recognition
 mediapipe
+
+# Library for 1.3" LCD Circular Displays
+st7789
