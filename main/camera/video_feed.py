@@ -34,10 +34,15 @@ class VideoFrame:
         return cv.cvtColor(self.image, cv.COLOR_BGR2RGB)
 
 class VideoFeed(Singleton):
+    """Singleton class that provides access to the video feed
+
+    Raises:
+        RuntimeError: Failed to open video feed, or failed to capture frame
+    """
 
     __feed = cv.VideoCapture(0)
     __lock = threading.Lock()
-    __cache = None
+    __cache: VideoFrame = None
 
     def __init__(self):
         if not self.__feed.isOpened():
@@ -47,19 +52,24 @@ class VideoFeed(Singleton):
     def __del__(self):
         self.__feed.release()
 
-    def capture(self):
+    def capture(self) -> VideoFrame:
         """
         Captures a frame from the video feed
+
+        Returns:
+            VideoFrame: Frame from the video feed
         """
         with self.__lock:
-            with self.__feed.isOpened():
-                ret, frame = self.__feed.read()
-                if ret:
-                    self.__cache = frame
-                    return frame
-                else:
-                    if self.__cache:
-                        return self.__cache
-                    else:
-                        LOGGER.error("Failed to capture frame")
-                        raise RuntimeError("Failed to capture frame")
+            if self.__feed.isOpened():
+                success, frame_capture = self.__feed.read()
+                if success:
+                    frame_capture = VideoFrame(frame_capture)
+                    self.__cache = frame_capture
+                    return frame_capture
+
+                # If we failed to capture a frame, return the last frame we captured
+                if self.__cache:
+                    return self.__cache
+
+                LOGGER.error("Failed to capture frame")
+                raise RuntimeError("Failed to capture frame")
