@@ -10,6 +10,29 @@ from . import LOGGER
 
 from ..util.singleton import Singleton
 
+class VideoFrame:
+    """Video Frame class, holds an image from the video feed
+
+    Args:
+        frame (cv.Mat): Frame from the video feed
+    """
+    def __init__(self, frame: cv.Mat):
+        self.image = frame
+
+    def __str__(self):
+        return f"VideoFrame({self.image.shape})"
+
+    def __repr__(self):
+        return self.__str__()
+
+    def to_pillow(self):
+        """Returns a RGB representation of the frame that can be used by PIL library
+
+        Returns:
+            cv.Mat: RGB representation of the frame
+        """
+        return cv.cvtColor(self.image, cv.COLOR_BGR2RGB)
+
 class VideoFeed(Singleton):
 
     __feed = cv.VideoCapture(0)
