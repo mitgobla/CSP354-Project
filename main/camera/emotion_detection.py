@@ -3,33 +3,45 @@ Emotion detection using OpenCV and SkiKit
 Author: Benjamin Dodd (1901386)
 """
 
+import threading
+
 import cv2 as cv
 from deepface import DeepFace
 
-VIDEO_CAPTURE = cv.VideoCapture(0)
+from . import LOGGER
 
-while True:
-    # Capture frame-by-frame
-    ret, frame = VIDEO_CAPTURE.read()
+from .emotion_repository import EMOTION_REPOSITORY
+from .video_feed import VideoFrame
 
-    gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+class EmotionDetection(threading.Thread):
+    """Thread for detecting emotions in a frame
+    """
+    def __init__(self, frame: VideoFrame):
+        super().__init__()
+        self.__image = frame.image
 
-    face_analyse = DeepFace.analyze(frame, actions = ['emotion'], enforce_detection=False, silent = True)[0]
+    def run(self):
+        try:
+            face_analysis = DeepFace.analyze(self.__image, actions = ['emotion'], enforce_detection=False, silent = True)[0]
+            dominant_emotion = face_analysis['dominant_emotion']
+            EMOTION_REPOSITORY.current_emotion = dominant_emotion
+        except cv.error:
+            return
 
-    dominant_emotion = face_analyse['dominant_emotion']
-    region = face_analyse['region']
+if __name__ == "__main__":
+    from .video_feed import VIDEO_FEED
 
-    # Draw text showing emotion
-    cv.putText(frame, dominant_emotion, (region['x'], region['y'] - 10), cv.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
+    while True:
+        video_frame = VIDEO_FEED.capture()
+        if video_frame:
+            emotion_detection = EmotionDetection(video_frame)
+            emotion_detection.start()
+            emotion_detection.join()
+            # draw the emotion on the frame
+            current_emotion = EMOTION_REPOSITORY.current_emotion
+            LOGGER.debug("Current emotion: %s", current_emotion)
+            cv.putText(video_frame.image, EMOTION_REPOSITORY.current_emotion, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv.imshow('Video', video_frame.image)
 
-    # Draw rectangle around the face showing emotion
-    cv.rectangle(frame, (region['x'], region['y']), (region['x'] + region['w'], region['y'] + region['h']), (255, 0, 0), 2)
-
-    # Display the resulting frame
-    cv.imshow('Video', frame)
-
-    if cv.waitKey(1) & 0xFF == ord('q'):
-        break
-
-VIDEO_CAPTURE.release()
-cv.destroyAllWindows()
+        if cv.waitKey(1) & 0xFF == ord('q'):
+            break
