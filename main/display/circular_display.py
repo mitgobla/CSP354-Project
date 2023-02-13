@@ -5,8 +5,16 @@ Author: Benjamin Dodd (1901386)
 
 import time
 
-import ST7789
 from PIL import Image
+
+from . import LOGGER
+
+try:
+    import ST7789
+except ImportError:
+    from ..util import mock_st77789 as ST7789
+
+from ..util.singleton import Singleton
 
 class Display(object):
     """
@@ -53,18 +61,20 @@ class Display(object):
         """
         self.display(Image.new("RGB", (self.diameter, self.diameter), (0, 0, 0)))
 
-class LeftDisplay(Display):
+class LeftDisplay(Display, Singleton):
     """
     Left Circular Display Driver
     """
     def __init__(self):
         super().__init__(diameter=240, rotation=0, port=0, cs_pin=1, dc_pin=9, backlight=19)
 
-class RightDisplay(Display):
+class RightDisplay(Display, Singleton):
     """
     Right Circular Display Driver
     """
     def __init__(self):
         super().__init__(diameter=240, rotation=180, port=0, cs_pin=0, dc_pin=9, backlight=18)
 
-
+if __name__ == '__main__':
+    RD = RightDisplay()
+    LD = LeftDisplay()
