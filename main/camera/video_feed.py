@@ -73,3 +73,14 @@ class VideoFeed(Singleton):
 
                 LOGGER.error("Failed to capture frame")
                 raise RuntimeError("Failed to capture frame")
+
+VIDEO_FEED = VideoFeed()
+
+if __name__ == "__main__":
+    while True:
+        frame = VIDEO_FEED.capture()
+        cv.imshow("Video", frame.image)
+        if cv.waitKey(1) & 0xFF == ord('q'):
+            break
+    cv.destroyAllWindows()
+    del VIDEO_FEED
