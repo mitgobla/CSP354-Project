@@ -61,14 +61,14 @@ class Display(object):
         """
         self.display(Image.new("RGB", (self.diameter, self.diameter), (0, 0, 0)))
 
-class LeftDisplay(Display, Singleton):
+class LeftDisplay(Display, metaclass = Singleton):
     """
     Left Circular Display Driver
     """
     def __init__(self):
         super().__init__(diameter=240, rotation=0, port=0, cs_pin=1, dc_pin=9, backlight=19)
 
-class RightDisplay(Display, Singleton):
+class RightDisplay(Display, metaclass = Singleton):
     """
     Right Circular Display Driver
     """

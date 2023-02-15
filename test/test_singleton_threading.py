@@ -5,7 +5,7 @@ from main.util.singleton import Singleton
 
 class TestSingleton(unittest.TestCase):
 
-    class TestClass(Singleton):
+    class TestClass(metaclass = Singleton):
         lock = threading.Lock()
         variable = 5
 

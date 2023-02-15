@@ -12,7 +12,7 @@ from ..util.singleton import Singleton
 
 UPDATE_INTERVAL = 1
 
-class EmotionRepository(Singleton):
+class EmotionRepository(metaclass = Singleton):
 
     __lock = threading.Lock()
     __current_emotion = None

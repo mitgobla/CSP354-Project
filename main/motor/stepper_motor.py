@@ -16,23 +16,19 @@ from ..util.singleton import Singleton
 
 CLOCKWISE = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
 
-class StepperMotor(Singleton):
+class StepperMotor(metaclass = Singleton):
     """
     Driver class for stepper motors.
     """
-    __instance = None
 
-    def __new__(cls, in1: int, in2: int, in3: int, in4: int, speed: float = 0.0005):
+    def __init__(self, in1: int, in2: int, in3: int, in4: int, speed: float = 0.0005):
         """Create a new instance of the StepperMotor class."""
-        if cls.__instance is None:
-            cls.__instance = super(StepperMotor, cls).__new__(cls)
-            cls.in1 = in1
-            cls.in2 = in2
-            cls.in3 = in3
-            cls.in4 = in4
-            cls.speed = speed if speed >= 0.0005 else 0.0005
-            cls.setup(cls)
-        return cls.__instance
+        self.in1 = in1
+        self.in2 = in2
+        self.in3 = in3
+        self.in4 = in4
+        self.speed = speed if speed >= 0.0005 else 0.0005
+        self.setup()
 
     def setup(self):
         """

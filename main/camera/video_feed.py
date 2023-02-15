@@ -33,7 +33,7 @@ class VideoFrame:
         """
         return cv.cvtColor(self.image, cv.COLOR_BGR2RGB)
 
-class VideoFeed(Singleton):
+class VideoFeed(metaclass = Singleton):
     """Singleton class that provides access to the video feed
 
     Raises:
