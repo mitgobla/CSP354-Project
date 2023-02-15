@@ -39,9 +39,7 @@ if __name__ == "__main__":
             emotion_detection.join()
             # draw the emotion on the frame
             current_emotion = EMOTION_REPOSITORY.current_emotion
-            LOGGER.debug("Current emotion: %s", current_emotion)
             cv.putText(video_frame.image, EMOTION_REPOSITORY.current_emotion, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             cv.imshow('Video', video_frame.image)
-
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
