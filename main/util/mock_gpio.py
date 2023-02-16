@@ -3,6 +3,8 @@ Mock GPIO class for testing purposes on Windows
 Author: Benjamin Dodd (1901386)
 """
 
+from random import choice
+
 from . import LOGGER
 
 class MockGPIO:
@@ -15,6 +17,8 @@ class MockGPIO:
     LOW = "LOW"
     HIGH = "HIGH"
     IN = "IN"
+    PUD_UP = "PUD_UP"
+    PUD_DOWN = "PUD_DOWN"
 
     @classmethod
     def setwarnings(cls, enabled: bool):
@@ -35,7 +39,7 @@ class MockGPIO:
         LOGGER.debug("MockGPIO.setmode(%s)", mode)
 
     @classmethod
-    def setup(cls, pin: int, mode: str, initial: str = None):
+    def setup(cls, pin: int, mode: str, initial: str = None, pull_up_down: str = None):
         """Set up a GPIO pin.
 
         Args:
@@ -43,7 +47,7 @@ class MockGPIO:
             mode (str): The pin mode. Must be either MockGPIO.IN or MockGPIO.OUT.
             initial (str, optional): Initial state of the pin. Must be either MockGPIO.LOW or MockGPIO.HIGH. Defaults to None.
         """
-        LOGGER.debug("MockGPIO.setup(%s, %s, %s)", pin, mode, initial)
+        LOGGER.debug("MockGPIO.setup(%s, %s, %s, %s)", pin, mode, initial, pull_up_down)
 
     @classmethod
     def output(cls, pin: int, value: str):
@@ -56,7 +60,7 @@ class MockGPIO:
         LOGGER.debug("MockGPIO.output(%s, %s)", pin, value)
 
     @classmethod
-    def input(cls, pin: int) -> int:
+    def input(cls, pin: int) -> str:
         """Read the state of a GPIO pin.
 
         Args:
@@ -65,5 +69,6 @@ class MockGPIO:
         Returns:
             int: The state of the pin. 0 for MockGPIO.LOW, 1 for MockGPIO.HIGH.
         """
-        LOGGER.debug("MockGPIO.input(%s)", pin)
-        return 0
+        state = choice([MockGPIO.HIGH, MockGPIO.LOW])
+        LOGGER.debug("MockGPIO.input(%s) -> %s", pin, state)
+        return state
