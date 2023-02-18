@@ -21,7 +21,6 @@ class WorkerThread(threading.Thread):
         """
         Stops the thread.
         """
-        LOGGER.debug("Stopping thread %s", self.name)
         self.__stopped_event.set()
 
     def is_stopped(self):
