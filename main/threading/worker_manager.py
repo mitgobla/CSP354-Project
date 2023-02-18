@@ -17,15 +17,15 @@ class WorkerManager(metaclass=Singleton):
     def __init__(self):
         self.__threads: List[WorkerThread] = []
 
-    def add_thread(self, target: Callable, *args, **kwargs):
+    def add_thread(self, worker: WorkerThread):
         """Adds a thread to the manager.
 
         Args:
             target (Callable): Function to run in the thread.
         """
-        thread = WorkerThread(target=target, args=args, kwargs=kwargs)
-        thread.start()
-        self.__threads.append(thread)
+
+        worker.start()
+        self.__threads.append(worker)
 
     def stop_threads(self):
         """

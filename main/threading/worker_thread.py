@@ -5,43 +5,48 @@ Author: Benjamin Dodd (1901386)
 
 import threading
 
+from . import LOGGER
+
 class WorkerThread(threading.Thread):
     """
     A custom Thread implementation that can be stopped and restarted.
     """
 
-    __id = 0
-
-    def __init__(self, target, *args, **kwargs):
-        super().__init__(target = target, args = args, kwargs = kwargs)
-        self.__id = WorkerThread.__id
-        WorkerThread.__id += 1
-        self.__stop_event = threading.Event()
-
-    def __str__(self):
-        return f"WorkerThread {self.__id}"
-
-    def __repr__(self) -> str:
-        return self.__str__()
-
-    def run(self):
-        while not self.__stop_event.is_set():
-            super().run()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__stopped_event = threading.Event()
 
     def stop(self):
         """
         Stops the thread.
         """
-        self.__stop_event.set()
-
-    def restart(self):
-        """
-        Restarts the thread.
-        """
-        self.__stop_event.clear()
+        LOGGER.debug("Stopping thread %s", self.name)
+        self.__stopped_event.set()
 
     def is_stopped(self):
         """
         Returns whether the thread is stopped.
+
+        Returns:
+            bool: True if the thread is stopped, False otherwise.
         """
-        return self.__stop_event.is_set()
+        return self.__stopped_event.is_set()
+
+if __name__ == "__main__":
+    import time
+
+    class MyThread(WorkerThread):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.count = 0
+
+        def run(self):
+            while not self.is_stopped():
+                print(self.count)
+                self.count += 1
+                time.sleep(0.5)
+
+    thread = MyThread()
+    thread.start()
+    time.sleep(5)
+    thread.stop()
