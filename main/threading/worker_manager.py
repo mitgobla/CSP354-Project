@@ -3,7 +3,10 @@ Manager class for the worker threads.
 Author: Benjamin Dodd (1901386)
 """
 
-from typing import List, Callable
+from typing import List
+from atexit import register
+
+from . import LOGGER
 
 from ..util.singleton import Singleton
 
@@ -16,14 +19,12 @@ class WorkerManager(metaclass=Singleton):
 
     def __init__(self):
         self.__threads: List[WorkerThread] = []
+        register(self.stop_threads)
 
     def add_thread(self, worker: WorkerThread):
-        """Adds a thread to the manager.
-
-        Args:
-            target (Callable): Function to run in the thread.
+        """Adds a WorkerThread to the manager.
         """
-
+        worker.manager = self
         worker.start()
         self.__threads.append(worker)
 
@@ -33,13 +34,6 @@ class WorkerManager(metaclass=Singleton):
         """
         for thread in self.__threads:
             thread.stop()
-
-    def restart_threads(self):
-        """
-        Restarts all threads.
-        """
-        for thread in self.__threads:
-            thread.restart()
 
     def is_stopped(self):
         """Returns whether all threads are stopped.
@@ -51,5 +45,14 @@ class WorkerManager(metaclass=Singleton):
             if not thread.is_stopped():
                 return False
         return True
+
+    def delete_thread(self, thread: WorkerThread):
+        """
+        Deletes a thread from the manager.
+
+        Args:
+            thread (WorkerThread): Thread to delete.
+        """
+        self.__threads.remove(thread)
 
 WORKER_MANAGER = WorkerManager()

@@ -14,6 +14,7 @@ class WorkerThread(threading.Thread):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.manager = None
         self.__stopped_event = threading.Event()
 
     def stop(self):
@@ -31,6 +32,21 @@ class WorkerThread(threading.Thread):
             bool: True if the thread is stopped, False otherwise.
         """
         return self.__stopped_event.is_set()
+
+    def run(self) -> None:
+        """
+        Runs the thread.
+        """
+        self.__stopped_event.clear()
+        self.work()
+        self.manager.delete_thread(self)
+
+    def work(self):
+        """
+        Override this method to do work in the thread.
+        """
+        return
+
 
 if __name__ == "__main__":
     import time
