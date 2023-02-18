@@ -13,5 +13,5 @@ deepface
 mediapipe
 
 # Library for 1.3" LCD Circular Displays
-spidev
-st7789
+spidev; platform_system == "Linux"
+st7789; platform_system == "Linux"
