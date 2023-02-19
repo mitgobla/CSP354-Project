@@ -3,23 +3,43 @@ Circular Displays Driver
 Author: Benjamin Dodd (1901386)
 """
 
-import time
+import threading
 
 from PIL import Image
+import cv2 as cv
+import numpy as np
 
 from . import LOGGER
 
 try:
     import ST7789
+    RASPI_LIB = True
 except ImportError:
     from ..util import mock_st77789 as ST7789
+    RASPI_LIB = False
 
+from ..threading.worker_manager import WORKER_MANAGER
+from ..threading.worker_thread import WorkerThread
 from ..util.singleton import Singleton
 
 class Display(object):
     """
     Circular Display Driver
     """
+
+    class DisplayWorker(WorkerThread):
+
+        def __init__(self, display: "Display"):
+            super().__init__()
+            self.display = display
+
+        def work(self):
+            if self.display.image is not None:
+                if RASPI_LIB:
+                    self.display.st7798.display(cv.resize(self.display.image, (self.display.diameter, self.display.diameter)))
+                else:
+                    self.display.st7798.display(self.display.image)
+
     def __init__(self, diameter: int, rotation: int, port: int, cs_pin: int, dc_pin: int, backlight: int):
         self.diameter = diameter
         self.rotation = rotation
@@ -31,7 +51,7 @@ class Display(object):
         self.offset_left = 40
         self.offset_top = 0
 
-        self._display = ST7789.ST7789(
+        self.st7798 = ST7789.ST7789(
             height=self.diameter,
             rotation=self.rotation,
             port=self.port,
@@ -43,23 +63,39 @@ class Display(object):
             offset_top=self.offset_top
         )
 
-        # black background
-        self.image = None
+        self.__lock = threading.Lock()
+        self.__image = None
         self.clear()
 
+    @property
+    def image(self):
+        """Gets the image to be displayed on the display.
 
-    def display(self, image: Image):
+        Returns:
+            Image: The image to be displayed on the display.
         """
-        Draws an image on the display
+        with self.__lock:
+            return self.__image
+
+    @image.setter
+    def image(self, image: cv.Mat):
+        """Sets the image to be displayed on the display.
+
+        Args:
+            image (Image): The image to be displayed on the display.
         """
-        self.image = image
-        self._display.display(image.resize((self.diameter, self.diameter)))
+        with self.__lock:
+            self.__image = image
+            worker = self.DisplayWorker(self)
+            WORKER_MANAGER.add_thread(worker)
 
     def clear(self):
         """
         Clears the display
         """
-        self.display(Image.new("RGB", (self.diameter, self.diameter), (0, 0, 0)))
+        blank = Image.new("RGB", (self.diameter, self.diameter), (0, 0, 0))
+        blank = cv.cvtColor(np.asarray(blank), cv.COLOR_RGB2BGR)
+        self.image = blank
 
 class LeftDisplay(Display, metaclass = Singleton):
     """
@@ -76,5 +112,16 @@ class RightDisplay(Display, metaclass = Singleton):
         super().__init__(diameter=240, rotation=180, port=0, cs_pin=0, dc_pin=9, backlight=18)
 
 if __name__ == '__main__':
+    import time
+    from ..camera.video_feed import VIDEO_FEED
+
     RD = RightDisplay()
     LD = LeftDisplay()
+
+
+    while True:
+        video_frame = VIDEO_FEED.capture()
+        if video_frame:
+            RD.image = video_frame.image
+            LD.image = video_frame.image
+        time.sleep(0.15)

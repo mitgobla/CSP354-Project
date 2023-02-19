@@ -10,7 +10,8 @@ opencv-python
 deepface
 
 # Gesture Recognition
-mediapipe
+mediapipe; platform_system == "Windows"
+mediapipe-rpi4; platform_system == "Linux"
 
 # Library for 1.3" LCD Circular Displays
 spidev; platform_system == "Linux"
