@@ -34,11 +34,7 @@ class NumberGuessing(metaclass=Singleton):
             self.number_guessing = number_guessing
 
         def work(self):
-            old_gesture = 0
             while not self.is_stopped():
-                if GESTURE_REPOSITORY.current_gesture == old_gesture:
-                    continue
-                old_gesture = GESTURE_REPOSITORY.current_gesture
                 if GESTURE_REPOSITORY.current_gesture == self.number_guessing.number:
                     RIGHT_DISPLAY.display_number(GESTURE_REPOSITORY.current_gesture, (0, 255, 0))
                 else:
@@ -47,7 +43,7 @@ class NumberGuessing(metaclass=Singleton):
 
     def __init__(self):
         self.number = randint(1, 8)
-        LOGGER.debug("Number to guess: %s", self.number)
+
         self.guess = 0
         self.running = False
 
@@ -62,28 +58,29 @@ class NumberGuessing(metaclass=Singleton):
         self.run()
 
     def stop(self):
+        LOGGER.debug("Stopping number guessing game")
         self.running = False
         WORKER_MANAGER.delete_thread(self.left_display_worker)
         WORKER_MANAGER.delete_thread(self.right_display_worker)
 
     def run(self):
         while self.running:
+            LOGGER.debug("Number to guess: %s", self.number)
             while self.guess != self.number:
                 self.guess = GESTURE_REPOSITORY.current_gesture
                 LOGGER.info("Incorrect! Try again.")
-                while self.guess == GESTURE_REPOSITORY.current_gesture:
+                while self.guess == GESTURE_REPOSITORY.current_gesture and self.guess != self.number:
                     time.sleep(0.15)
 
             LOGGER.info("Correct! The number was %s", self.number)
-            self.stop()
+            time.sleep(3)
+            self.number = randint(1, 8)
 
 NUMBER_GUESSING = NumberGuessing()
 
 if __name__ == "__main__":
-    NUMBER_GUESSING.start()
     try:
-        while True:
-            time.sleep(0.1)
+        NUMBER_GUESSING.start()
     except KeyboardInterrupt:
         NUMBER_GUESSING.stop()
         WORKER_MANAGER.stop_threads()

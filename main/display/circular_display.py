@@ -95,9 +95,13 @@ class Display(object):
         Args:
             number (int): The number to display.
         """
+        text = str(number)
+        text_size = cv.getTextSize(text, cv.FONT_HERSHEY_SIMPLEX, 3, 3)
+        text_x = (self.diameter - text_size[0][0]) // 2
+        text_y = (self.diameter + text_size[0][1]) // 2
         blank = Image.new("RGB", (self.diameter, self.diameter), (0, 0, 0))
         blank = cv.cvtColor(np.asarray(blank), cv.COLOR_RGB2BGR)
-        self.image = cv.putText(blank, str(number), (self.diameter // 2, self.diameter // 2), cv.FONT_HERSHEY_SIMPLEX, 2.5, colour, 2, cv.LINE_AA)
+        self.image = cv.putText(blank, text, (text_x, text_y), cv.FONT_HERSHEY_SIMPLEX, 3, colour, 3, cv.LINE_AA)
 
     def clear(self):
         """
