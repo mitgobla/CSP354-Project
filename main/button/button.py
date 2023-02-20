@@ -32,7 +32,7 @@ class Button(metaclass = Singleton):
             super().__init__()
             self.button = button
 
-        def run(self):
+        def work(self):
             """
             Run the worker thread.
             """

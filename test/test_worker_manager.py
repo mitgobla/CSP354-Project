@@ -11,7 +11,7 @@ class TestWorkerManager(unittest.TestCase):
             super().__init__(*args, **kwargs)
             self.count = 0
 
-        def run(self):
+        def work(self):
             while not self.is_stopped():
                 self.count += 1
                 time.sleep(0.5)

@@ -55,7 +55,7 @@ if __name__ == "__main__":
             super().__init__(*args, **kwargs)
             self.count = 0
 
-        def run(self):
+        def work(self):
             while not self.is_stopped():
                 print(self.count)
                 self.count += 1
