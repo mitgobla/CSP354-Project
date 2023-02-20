@@ -75,6 +75,8 @@ class WorkerManager(metaclass=Singleton):
             thread (WorkerThread): Thread to delete.
         """
         if thread in self.__threads:
+            if not thread.is_stopped():
+                thread.stop()
             self.__threads.remove(thread)
 
 WORKER_MANAGER = WorkerManager()
