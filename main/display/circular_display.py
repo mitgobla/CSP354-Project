@@ -89,14 +89,15 @@ class Display(object):
             worker = self.DisplayWorker(self)
             WORKER_MANAGER.add_thread(worker)
 
-    def display_number(self, number: int):
+    def display_number(self, number: int, colour: tuple = (255, 255, 255)):
         """Displays a number on the display.
 
         Args:
             number (int): The number to display.
         """
-        self.clear()
-        self.image = cv.putText(self.image, str(number), (self.diameter // 2, self.diameter // 2), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv.LINE_AA)
+        blank = Image.new("RGB", (self.diameter, self.diameter), (0, 0, 0))
+        blank = cv.cvtColor(np.asarray(blank), cv.COLOR_RGB2BGR)
+        self.image = cv.putText(blank, str(number), (self.diameter // 2, self.diameter // 2), cv.FONT_HERSHEY_SIMPLEX, 2.5, colour, 2, cv.LINE_AA)
 
     def clear(self):
         """

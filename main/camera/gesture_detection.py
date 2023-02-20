@@ -46,7 +46,7 @@ class GestureDetection(metaclass=Singleton):
                 return
 
             with MP_HANDS.Hands(
-                model_complexity=0,
+                # model_complexity=0,
                 min_detection_confidence=0.5,
                 min_tracking_confidence=0.5) as hands:
                 results = hands.process(self.gesture_detection.image)

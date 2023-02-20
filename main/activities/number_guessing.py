@@ -28,18 +28,31 @@ class NumberGuessing(metaclass=Singleton):
                 time.sleep(0.15)
 
     class RightDisplayWorker(WorkerThread):
-            def work(self):
-                while not self.is_stopped():
-                    RIGHT_DISPLAY.display_number(GESTURE_REPOSITORY.current_gesture)
-                    time.sleep(0.15)
+
+        def __init__(self, number_guessing: "NumberGuessing"):
+            super().__init__()
+            self.number_guessing = number_guessing
+
+        def work(self):
+            old_gesture = 0
+            while not self.is_stopped():
+                if GESTURE_REPOSITORY.current_gesture == old_gesture:
+                    continue
+                old_gesture = GESTURE_REPOSITORY.current_gesture
+                if GESTURE_REPOSITORY.current_gesture == self.number_guessing.number:
+                    RIGHT_DISPLAY.display_number(GESTURE_REPOSITORY.current_gesture, (0, 255, 0))
+                else:
+                    RIGHT_DISPLAY.display_number(GESTURE_REPOSITORY.current_gesture, (0, 0, 255))
+                time.sleep(0.15)
 
     def __init__(self):
         self.number = randint(1, 8)
+        LOGGER.debug("Number to guess: %s", self.number)
         self.guess = 0
         self.running = False
 
         self.left_display_worker = self.LeftDisplayWorker()
-        self.right_display_worker = self.RightDisplayWorker()
+        self.right_display_worker = self.RightDisplayWorker(self)
 
 
     def start(self):
@@ -61,13 +74,12 @@ class NumberGuessing(metaclass=Singleton):
                 while self.guess == GESTURE_REPOSITORY.current_gesture:
                     time.sleep(0.15)
 
-            LOGGER.info("Correct! The number was " + str(self.number))
+            LOGGER.info("Correct! The number was %s", self.number)
             self.stop()
 
 NUMBER_GUESSING = NumberGuessing()
 
 if __name__ == "__main__":
-    import sys
     NUMBER_GUESSING.start()
     try:
         while True:
