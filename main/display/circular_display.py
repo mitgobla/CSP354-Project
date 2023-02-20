@@ -89,6 +89,15 @@ class Display(object):
             worker = self.DisplayWorker(self)
             WORKER_MANAGER.add_thread(worker)
 
+    def display_number(self, number: int):
+        """Displays a number on the display.
+
+        Args:
+            number (int): The number to display.
+        """
+        self.clear()
+        self.image = cv.putText(self.image, str(number), (self.diameter // 2, self.diameter // 2), cv.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv.LINE_AA)
+
     def clear(self):
         """
         Clears the display
@@ -111,17 +120,20 @@ class RightDisplay(Display, metaclass = Singleton):
     def __init__(self):
         super().__init__(diameter=240, rotation=180, port=0, cs_pin=0, dc_pin=9, backlight=18)
 
+RIGHT_DISPLAY = RightDisplay()
+LEFT_DISPLAY = LeftDisplay()
+
 if __name__ == '__main__':
     import time
     from ..camera.video_feed import VIDEO_FEED
 
-    RD = RightDisplay()
-    LD = LeftDisplay()
+    RIGHT_DISPLAY = RightDisplay()
+    LEFT_DISPLAY = LeftDisplay()
 
 
     while True:
         video_frame = VIDEO_FEED.capture()
         if video_frame:
-            RD.image = video_frame.image
-            LD.image = video_frame.image
+            RIGHT_DISPLAY.image = video_frame.image
+            LEFT_DISPLAY.image = video_frame.image
         time.sleep(0.15)

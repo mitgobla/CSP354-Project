@@ -36,7 +36,7 @@ class Button(metaclass = Singleton):
             """
             Run the worker thread.
             """
-            while True:
+            while not self.is_stopped():
                 state = self.button.is_pressed()
                 if BUTTON_REPOSITORY.button_state != state:
                     BUTTON_REPOSITORY.button_state = state

@@ -33,7 +33,7 @@ class ST7789(object):
             """
             Run the worker thread.
             """
-            while True:
+            while not self.is_stopped():
                 if self.st7789.image is None:
                     # time.sleep(0.1)
                     continue

@@ -3,6 +3,7 @@ Manager class for the worker threads.
 Author: Benjamin Dodd (1901386)
 """
 
+import time
 from typing import List
 from atexit import register
 
@@ -16,10 +17,29 @@ class WorkerManager(metaclass=Singleton):
     """
     Manager class for the worker threads.
     """
+    class WorkerManagerWatcher(WorkerThread):
+        """
+        Worker thread that watches the worker threads.
+        """
+
+        def __init__(self, manager: "WorkerManager"):
+            super().__init__()
+            self.manager = manager
+
+        def work(self):
+            while not self.is_stopped():
+                LOGGER.debug("WorkerManager: thread count: %s", len(self.manager))
+                time.sleep(3)
+
 
     def __init__(self):
         self.__threads: List[WorkerThread] = []
         register(self.stop_threads)
+        self.watcher = self.WorkerManagerWatcher(self)
+        self.watcher.start()
+
+    def __len__(self):
+        return len(self.__threads)
 
     def add_thread(self, worker: WorkerThread):
         """Adds a WorkerThread to the manager.
@@ -34,6 +54,7 @@ class WorkerManager(metaclass=Singleton):
         """
         for thread in self.__threads:
             thread.stop()
+        self.watcher.stop()
 
     def is_stopped(self):
         """Returns whether all threads are stopped.
@@ -53,6 +74,7 @@ class WorkerManager(metaclass=Singleton):
         Args:
             thread (WorkerThread): Thread to delete.
         """
-        self.__threads.remove(thread)
+        if thread in self.__threads:
+            self.__threads.remove(thread)
 
 WORKER_MANAGER = WorkerManager()
