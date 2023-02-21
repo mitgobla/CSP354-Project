@@ -23,6 +23,7 @@ class TestStorableType(unittest.TestCase):
 
     def test_persistence(self):
         test = StorableType("test", 0)
+        test.value = 1
         self.assertEqual(test.value, 1)
         test.value = 2
         self.assertEqual(test.value, 2)

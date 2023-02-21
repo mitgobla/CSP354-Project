@@ -36,7 +36,7 @@ class WorkerManager(metaclass=Singleton):
         self.__threads: List[WorkerThread] = []
         register(self.stop_threads)
         self.watcher = self.WorkerManagerWatcher(self)
-        self.watcher.start()
+        # self.watcher.start()
 
     def __len__(self):
         return len(self.__threads)
