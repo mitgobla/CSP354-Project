@@ -30,6 +30,6 @@ class EmotionRepository(metaclass = Singleton):
             if time.time() - self.__last_update > UPDATE_INTERVAL:
                 self.__last_update = time.time()
                 self.__current_emotion = value
-                LOGGER.debug("Current emotion: %s", value)
+                # LOGGER.debug("Current emotion: %s", value)
 
 EMOTION_REPOSITORY = EmotionRepository()

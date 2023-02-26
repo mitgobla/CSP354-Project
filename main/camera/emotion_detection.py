@@ -4,9 +4,9 @@ Author: Benjamin Dodd (1901386)
 """
 
 import threading
-
 import cv2 as cv
-from deepface import DeepFace
+
+from fer import FER
 
 from . import LOGGER
 
@@ -31,6 +31,7 @@ class EmotionDetection(metaclass=Singleton):
         def __init__(self, emotion_detection: "EmotionDetection"):
             """Create a new instance of the EmotionDetectionWorker class."""
             super().__init__()
+            self.detector = FER()
             self.emotion_detection = emotion_detection
 
         def work(self):
@@ -38,10 +39,11 @@ class EmotionDetection(metaclass=Singleton):
             Run the worker thread.
             """
             if self.running or self.emotion_detection.image is None:
+                LOGGER.debug("Emotion detection worker thread is already running or no image to analyse.")
                 return
             try:
-                face_analysis = DeepFace.analyze(self.emotion_detection.image, actions = ['emotion'], enforce_detection=False, silent = True)[0]
-                dominant_emotion = face_analysis['dominant_emotion']
+                self.running = True
+                dominant_emotion, _ = self.detector.top_emotion(self.emotion_detection.image)
                 EMOTION_REPOSITORY.current_emotion = dominant_emotion
             except cv.error:
                 return
