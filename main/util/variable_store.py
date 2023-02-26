@@ -26,7 +26,7 @@ class VariableStore(metaclass=Singleton):
             LOGGER.warning("variable_store.json not found, creating new file.")
             if not path.exists(path.dirname(STORE_PATH)):
                 makedirs(path.dirname(STORE_PATH))
-            with open(STORE_PATH, "w") as file:
+            with open(STORE_PATH, "w", encoding='utf-8') as file:
                 json.dump(self.__data, file)
 
     def __getitem__(self, key):
