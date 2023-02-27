@@ -46,8 +46,8 @@ class VideoFeed(metaclass = Singleton):
 
     def __init__(self):
         self.__feed.set(cv.CAP_PROP_FPS, 15)
-        self.__feed.set(cv.CAP_PROP_FRAME_WIDTH, 640)
-        self.__feed.set(cv.CAP_PROP_FRAME_HEIGHT, 480)
+        self.__feed.set(cv.CAP_PROP_FRAME_WIDTH, 480)
+        self.__feed.set(cv.CAP_PROP_FRAME_HEIGHT, 240)
         if not self.__feed.isOpened():
             LOGGER.error("Failed to open video feed")
             raise RuntimeError("Failed to open video feed")

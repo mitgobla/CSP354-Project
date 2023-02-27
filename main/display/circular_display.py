@@ -116,14 +116,14 @@ class LeftDisplay(Display, metaclass = Singleton):
     Left Circular Display Driver
     """
     def __init__(self):
-        super().__init__(diameter=240, rotation=0, port=0, cs_pin=1, dc_pin=9, backlight=19)
+        super().__init__(diameter=240, rotation=90, port=0, cs_pin=1, dc_pin=9, backlight=19)
 
 class RightDisplay(Display, metaclass = Singleton):
     """
     Right Circular Display Driver
     """
     def __init__(self):
-        super().__init__(diameter=240, rotation=180, port=0, cs_pin=0, dc_pin=9, backlight=18)
+        super().__init__(diameter=240, rotation=90, port=0, cs_pin=0, dc_pin=9, backlight=18)
 
 RIGHT_DISPLAY = RightDisplay()
 LEFT_DISPLAY = LeftDisplay()
@@ -140,5 +140,5 @@ if __name__ == '__main__':
         video_frame = VIDEO_FEED.capture()
         if video_frame:
             RIGHT_DISPLAY.image = video_frame.image
-            LEFT_DISPLAY.image = video_frame.image
-        time.sleep(0.15)
+            LEFT_DISPLAY.image = cv.flip(video_frame.image, 1)
+        time.sleep(0.1)

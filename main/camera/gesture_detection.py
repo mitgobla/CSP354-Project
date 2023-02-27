@@ -45,6 +45,8 @@ class GestureDetection(metaclass=Singleton):
             if self.running or self.gesture_detection.image is None:
                 return
 
+            self.running = True
+
             with MP_HANDS.Hands(
                 # model_complexity=0,
                 min_detection_confidence=0.5,
@@ -67,6 +69,8 @@ class GestureDetection(metaclass=Singleton):
                             finger_count += 1
 
                 GESTURE_REPOSITORY.current_gesture = finger_count
+
+            self.running = False
 
 
     def __init__(self):

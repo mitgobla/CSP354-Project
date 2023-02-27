@@ -1,3 +1,7 @@
+# Raspberry Pi Libraries
+RPi.GPIO; platform_system == "Linux"
+moviepy; platform_system == "Linux"
+
 # Scientific Libraries
 numpy
 scipy
@@ -7,12 +11,13 @@ pillow
 
 # Emotion Recognition
 opencv-python
+tensorflow
 fer
 
 # Gesture Recognition
-mediapipe; platform_system == "Windows"
+mediapipe
 mediapipe-rpi4; platform_system == "Linux"
-protobuf==3.20.3; platform_system == "Linux"
+protobuf==3.20.0; platform_system == "Linux"
 cloud-tpu-client
 
 # Library for 1.3" LCD Circular Displays
