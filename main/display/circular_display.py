@@ -13,9 +13,11 @@ from . import LOGGER
 
 try:
     import ST7789
+    LOGGER.debug("ST7789 library found, using library")
     RASPI_LIB = True
 except ImportError:
     from ..util import mock_st77789 as ST7789
+    LOGGER.debug("ST7789 library not found, using mock library")
     RASPI_LIB = False
 
 from ..threading.worker_manager import WORKER_MANAGER
@@ -67,6 +69,8 @@ class Display(object):
         self.__image = None
         self.clear()
 
+        LOGGER.debug("Display created")
+
     @property
     def image(self):
         """Gets the image to be displayed on the display.
@@ -87,7 +91,7 @@ class Display(object):
         with self.__lock:
             self.__image = image
             worker = self.DisplayWorker(self)
-            WORKER_MANAGER.add_thread(worker)
+            WORKER_MANAGER.add_worker(worker)
 
     def display_number(self, number: int, colour: tuple = (255, 255, 255)):
         """Displays a number on the display.
@@ -117,6 +121,7 @@ class LeftDisplay(Display, metaclass = Singleton):
     """
     def __init__(self):
         super().__init__(diameter=240, rotation=90, port=0, cs_pin=1, dc_pin=9, backlight=19)
+        LOGGER.debug("Left Display created")
 
 class RightDisplay(Display, metaclass = Singleton):
     """
@@ -124,6 +129,7 @@ class RightDisplay(Display, metaclass = Singleton):
     """
     def __init__(self):
         super().__init__(diameter=240, rotation=90, port=0, cs_pin=0, dc_pin=9, backlight=18)
+        LOGGER.debug("Right Display created")
 
 RIGHT_DISPLAY = RightDisplay()
 LEFT_DISPLAY = LeftDisplay()
@@ -131,10 +137,6 @@ LEFT_DISPLAY = LeftDisplay()
 if __name__ == '__main__':
     import time
     from ..camera.video_feed import VIDEO_FEED
-
-    RIGHT_DISPLAY = RightDisplay()
-    LEFT_DISPLAY = LeftDisplay()
-
 
     while True:
         video_frame = VIDEO_FEED.capture()

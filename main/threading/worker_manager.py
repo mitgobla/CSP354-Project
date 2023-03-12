@@ -33,28 +33,30 @@ class WorkerManager(metaclass=Singleton):
 
 
     def __init__(self):
-        self.__threads: List[WorkerThread] = []
-        register(self.stop_threads)
+        self.__workers: List[WorkerThread] = []
+        register(self.stop_all_workers)
         self.watcher = self.WorkerManagerWatcher(self)
-        # self.watcher.start()
+        self.watcher.start()
 
     def __len__(self):
-        return len(self.__threads)
+        return len(self.__workers)
 
-    def add_thread(self, worker: WorkerThread):
+    def add_worker(self, worker: WorkerThread):
         """Adds a WorkerThread to the manager.
         """
         worker.manager = self
         worker.start()
-        self.__threads.append(worker)
+        self.__workers.append(worker)
+        LOGGER.debug("Worker added: %s", worker)
 
-    def stop_threads(self):
+    def stop_all_workers(self):
         """
-        Stops all threads.
+        Stops all workers.
         """
-        for thread in self.__threads:
+        for thread in self.__workers:
             thread.stop()
         self.watcher.stop()
+        LOGGER.debug("All workers stopped")
 
     def is_stopped(self):
         """Returns whether all threads are stopped.
@@ -62,21 +64,23 @@ class WorkerManager(metaclass=Singleton):
         Returns:
             bool: True if all threads are stopped, False otherwise.
         """
-        for thread in self.__threads:
+        for thread in self.__workers:
             if not thread.is_stopped():
                 return False
         return True
 
-    def delete_thread(self, thread: WorkerThread):
+    def remove_worker(self, thread: WorkerThread):
         """
-        Deletes a thread from the manager.
+        Removes a worker from the manager.
 
         Args:
-            thread (WorkerThread): Thread to delete.
+            thread (WorkerThread): Worker to delete.
         """
-        if thread in self.__threads:
+        LOGGER.debug("Removing worker: %s", thread)
+        if thread in self.__workers:
             if not thread.is_stopped():
                 thread.stop()
-            self.__threads.remove(thread)
+            self.__workers.remove(thread)
+            LOGGER.debug("Worker removed: %s", thread)
 
 WORKER_MANAGER = WorkerManager()

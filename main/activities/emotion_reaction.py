@@ -62,8 +62,8 @@ class EmotionReaction(metaclass=Singleton):
         self.display_worker = self.DisplayWorker()
 
     def start(self):
-        WORKER_MANAGER.add_thread(self.emotion_worker)
-        WORKER_MANAGER.add_thread(self.display_worker)
+        WORKER_MANAGER.add_worker(self.emotion_worker)
+        WORKER_MANAGER.add_worker(self.display_worker)
         self.running = True
         self.run()
 
@@ -89,4 +89,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         EMOTION_REACTION.stop()
         LOGGER.debug("Exiting emotion reaction game")
-        WORKER_MANAGER.stop_threads()
+        WORKER_MANAGER.stop_all_workers()

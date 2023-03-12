@@ -52,16 +52,16 @@ class NumberGuessing(metaclass=Singleton):
 
 
     def start(self):
-        WORKER_MANAGER.add_thread(self.left_display_worker)
-        WORKER_MANAGER.add_thread(self.right_display_worker)
+        WORKER_MANAGER.add_worker(self.left_display_worker)
+        WORKER_MANAGER.add_worker(self.right_display_worker)
         self.running = True
         self.run()
 
     def stop(self):
         LOGGER.debug("Stopping number guessing game")
         self.running = False
-        WORKER_MANAGER.delete_thread(self.left_display_worker)
-        WORKER_MANAGER.delete_thread(self.right_display_worker)
+        WORKER_MANAGER.remove_worker(self.left_display_worker)
+        WORKER_MANAGER.remove_worker(self.right_display_worker)
 
     def run(self):
         while self.running:
@@ -83,4 +83,4 @@ if __name__ == "__main__":
         NUMBER_GUESSING.start()
     except KeyboardInterrupt:
         NUMBER_GUESSING.stop()
-        WORKER_MANAGER.stop_threads()
+        WORKER_MANAGER.stop_all_workers()

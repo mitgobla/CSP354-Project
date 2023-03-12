@@ -94,7 +94,7 @@ class GestureDetection(metaclass=Singleton):
         with self.__lock:
             self.__image = image.to_pillow()
             worker = self.GestureDetectionWorker(self)
-            WORKER_MANAGER.add_thread(worker)
+            WORKER_MANAGER.add_worker(worker)
 
 GESTURE_DETECTION = GestureDetection()
 

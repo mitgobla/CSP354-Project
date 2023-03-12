@@ -48,7 +48,7 @@ class Button(metaclass = Singleton):
         self.setup()
 
         self.worker = self.ButtonWorker(self)
-        WORKER_MANAGER.add_thread(self.worker)
+        WORKER_MANAGER.add_worker(self.worker)
 
     def setup(self):
         """

@@ -6,7 +6,7 @@ Author: Benjamin Dodd (1901386)
 import threading
 
 from . import LOGGER
-
+from . import worker_manager
 class WorkerThread(threading.Thread):
     """
     A custom Thread implementation that can be stopped and restarted.
@@ -14,13 +14,14 @@ class WorkerThread(threading.Thread):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.manager = None
+        self.manager: worker_manager.WorkerManager = None
         self.__stopped_event = threading.Event()
 
     def stop(self):
         """
         Stops the thread.
         """
+        LOGGER.debug("Stopping thread: %s", self)
         self.__stopped_event.set()
 
     def is_stopped(self):
@@ -38,7 +39,7 @@ class WorkerThread(threading.Thread):
         """
         self.__stopped_event.clear()
         self.work()
-        self.manager.delete_thread(self)
+        self.manager.remove_worker(self)
 
     def work(self):
         """

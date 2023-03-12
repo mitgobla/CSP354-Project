@@ -69,7 +69,7 @@ class EmotionDetection(metaclass=Singleton):
         with self.__lock:
             self.__image = frame.image
             worker = self.EmotionDetectionWorker(self)
-            WORKER_MANAGER.add_thread(worker)
+            WORKER_MANAGER.add_worker(worker)
 
 EMOTION_DETECTION = EmotionDetection()
 
@@ -85,5 +85,5 @@ if __name__ == "__main__":
             cv.putText(video_frame.image, EMOTION_REPOSITORY.current_emotion, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             cv.imshow('Video', video_frame.image)
         if cv.waitKey(1) & 0xFF == ord('q'):
-            WORKER_MANAGER.stop_threads()
+            WORKER_MANAGER.stop_all_workers()
             break

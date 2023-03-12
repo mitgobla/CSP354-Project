@@ -60,7 +60,7 @@ class ST7789(object):
         self.__image = None
 
         worker = self.ST7789Worker(self)
-        WORKER_MANAGER.add_thread(worker)
+        WORKER_MANAGER.add_worker(worker)
 
         LOGGER.debug("Mock ST7789 initialised")
 

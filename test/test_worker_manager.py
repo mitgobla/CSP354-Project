@@ -19,7 +19,7 @@ class TestWorkerManager(unittest.TestCase):
     def test_all_stopped(self):
         threads = [TestWorkerManager.TestThread() for _ in range(5)]
         for thread in threads:
-            WORKER_MANAGER.add_thread(thread)
+            WORKER_MANAGER.add_worker(thread)
         time.sleep(5)
-        WORKER_MANAGER.stop_threads()
+        WORKER_MANAGER.stop_all_workers()
         self.assertTrue(WORKER_MANAGER.is_stopped())

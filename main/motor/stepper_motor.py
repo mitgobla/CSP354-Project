@@ -110,7 +110,7 @@ class StepperMotor(metaclass = Singleton):
             steps (int, optional): Number of steps to perform. Defaults to 1.
         """
         worker = StepperMotor.StepperMotorWorker(self, StepperMotorDirection.TURN_CLOCKWISE, steps)
-        WORKER_MANAGER.add_thread(worker)
+        WORKER_MANAGER.add_worker(worker)
         LOGGER.debug("Stepper motor stepped clockwise %d steps", steps)
 
     def step_anticlockwise(self, steps: int = 1):
@@ -120,7 +120,7 @@ class StepperMotor(metaclass = Singleton):
             steps (int, optional): Number of steps to perform. Defaults to 1.
         """
         worker = StepperMotor.StepperMotorWorker(self, StepperMotorDirection.TURN_ANTICLOCKWISE, steps)
-        WORKER_MANAGER.add_thread(worker)
+        WORKER_MANAGER.add_worker(worker)
         LOGGER.debug("Stepper motor stepped anticlockwise %d steps", steps)
 
 STEPPER_MOTOR = StepperMotor(11, 13, 15, 16)
