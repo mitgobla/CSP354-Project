@@ -66,4 +66,12 @@ class Button(metaclass = Singleton):
         return state
 
 
-BUTTON = Button(7)
+BUTTON = Button(37)
+
+if __name__ == "__main__":
+    try:
+        while True:
+            print(BUTTON_REPOSITORY.button_state)
+            time.sleep(1)
+    except KeyboardInterrupt:
+        WORKER_MANAGER.stop_all_workers()
