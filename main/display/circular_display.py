@@ -22,7 +22,6 @@ except ImportError:
 
 from ..threading.worker_manager import WORKER_MANAGER
 from ..threading.worker_thread import WorkerThread
-from ..util.singleton import Singleton
 
 class Display(object):
     """
@@ -115,7 +114,7 @@ class Display(object):
         blank = cv.cvtColor(np.asarray(blank), cv.COLOR_RGB2BGR)
         self.image = blank
 
-class LeftDisplay(Display, metaclass = Singleton):
+class LeftDisplay(Display):
     """
     Left Circular Display Driver
     """
@@ -123,7 +122,7 @@ class LeftDisplay(Display, metaclass = Singleton):
         super().__init__(diameter=240, rotation=90, port=0, cs_pin=1, dc_pin=9, backlight=19)
         LOGGER.debug("Left Display created")
 
-class RightDisplay(Display, metaclass = Singleton):
+class RightDisplay(Display):
     """
     Right Circular Display Driver
     """

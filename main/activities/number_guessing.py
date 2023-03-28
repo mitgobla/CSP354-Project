@@ -12,11 +12,10 @@ from ..camera.video_feed import VIDEO_FEED
 from ..camera.gesture_detection import GESTURE_DETECTION
 from ..camera.gesture_repository import GESTURE_REPOSITORY
 from ..display.circular_display import LEFT_DISPLAY, RIGHT_DISPLAY
-from ..util.singleton import Singleton
 from ..threading.worker_manager import WORKER_MANAGER
 from ..threading.worker_thread import WorkerThread
 
-class NumberGuessing(metaclass=Singleton):
+class NumberGuessing:
 
     class LeftDisplayWorker(WorkerThread):
         def work(self):

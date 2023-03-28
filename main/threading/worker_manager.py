@@ -9,11 +9,9 @@ from atexit import register
 
 from . import LOGGER
 
-from ..util.singleton import Singleton
-
 from .worker_thread import WorkerThread
 
-class WorkerManager(metaclass=Singleton):
+class WorkerManager:
     """
     Manager class for the worker threads.
     """

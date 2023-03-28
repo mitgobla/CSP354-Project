@@ -15,9 +15,8 @@ from .video_feed import VideoFrame
 
 from ..threading.worker_manager import WORKER_MANAGER
 from ..threading.worker_thread import WorkerThread
-from ..util.singleton import Singleton
 
-class EmotionDetection(metaclass=Singleton):
+class EmotionDetection:
     """
     Class for detecting emotions in a video frame.
     """

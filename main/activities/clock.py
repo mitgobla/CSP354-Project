@@ -9,7 +9,6 @@ from enum import Enum
 
 from . import LOGGER
 from ..display.circular_display import LEFT_DISPLAY, RIGHT_DISPLAY
-from ..util.singleton import Singleton
 from ..threading.worker_manager import WORKER_MANAGER
 from ..threading.worker_thread import WorkerThread
 from ..button.button_repository import BUTTON_REPOSITORY
@@ -22,7 +21,7 @@ class ClockMode(Enum):
     HOUR_24 = 0
     HOUR_12 = 1
 
-class Clock(metaclass=Singleton):
+class Clock:
 
     class ClockWorker(WorkerThread):
         """

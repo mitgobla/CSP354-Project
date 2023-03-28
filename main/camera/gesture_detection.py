@@ -15,14 +15,13 @@ from .video_feed import VideoFrame
 
 from ..threading.worker_manager import WORKER_MANAGER
 from ..threading.worker_thread import WorkerThread
-from ..util.singleton import Singleton
 
 
 MP_DRAWING = mp.solutions.drawing_utils
 MP_DRAWING_STYLES = mp.solutions.drawing_styles
 MP_HANDS = mp.solutions.hands
 
-class GestureDetection(metaclass=Singleton):
+class GestureDetection:
     """
     Class for detecting gestures in a frame
     """

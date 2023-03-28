@@ -9,11 +9,9 @@ from threading import Lock
 
 from . import LOGGER
 
-from .singleton import Singleton
-
 STORE_PATH = path.join("data", "variable_store.json")
 
-class VariableStore(metaclass=Singleton):
+class VariableStore:
 
     def __init__(self):
         self.__lock = Lock()

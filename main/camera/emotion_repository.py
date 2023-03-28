@@ -8,11 +8,9 @@ import time
 
 from . import LOGGER
 
-from ..util.singleton import Singleton
-
 UPDATE_INTERVAL = 1
 
-class EmotionRepository(metaclass = Singleton):
+class EmotionRepository:
 
     __lock = threading.Lock()
     __current_emotion = None

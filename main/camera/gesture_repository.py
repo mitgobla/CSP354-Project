@@ -7,9 +7,7 @@ import threading
 
 from . import LOGGER
 
-from ..util.singleton import Singleton
-
-class GestureRepository(metaclass = Singleton):
+class GestureRepository:
 
     __lock = threading.Lock()
     __current_gesture = None

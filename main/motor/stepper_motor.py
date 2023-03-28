@@ -13,7 +13,6 @@ try:
 except ImportError:
     from ..util.mock_gpio import MockGPIO as GPIO
 
-from ..util.singleton import Singleton
 from ..util.storable_type import StorableType
 from ..threading.worker_manager import WORKER_MANAGER
 from ..threading.worker_thread import WorkerThread
@@ -24,7 +23,7 @@ class StepperMotorDirection(Enum):
     """Enum for the direction of a stepper motor."""
     TURN_CLOCKWISE = 1
     TURN_ANTICLOCKWISE = 2
-class StepperMotor(metaclass = Singleton):
+class StepperMotor:
     """
     Driver class for stepper motors.
     """

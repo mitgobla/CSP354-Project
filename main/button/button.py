@@ -15,9 +15,8 @@ except ImportError:
 
 from ..threading.worker_manager import WORKER_MANAGER
 from ..threading.worker_thread import WorkerThread
-from ..util.singleton import Singleton
 
-class Button(metaclass = Singleton):
+class Button:
     """
     Driver class for a button.
     """

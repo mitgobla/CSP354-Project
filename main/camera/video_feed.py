@@ -8,8 +8,6 @@ import cv2 as cv
 
 from . import LOGGER
 
-from ..util.singleton import Singleton
-
 class VideoFrame:
     """Video Frame class, holds an image from the video feed
 
@@ -33,7 +31,7 @@ class VideoFrame:
         """
         return cv.cvtColor(self.image, cv.COLOR_BGR2RGB)
 
-class VideoFeed(metaclass = Singleton):
+class VideoFeed:
     """Singleton class that provides access to the video feed
 
     Raises:
