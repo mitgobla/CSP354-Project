@@ -4,7 +4,7 @@ Author: Benjamin Dodd (1901386)
 """
 
 from threading import Lock
-from . import LOGGER
+from .button import Button
 
 class ButtonRepository():
 
@@ -12,7 +12,7 @@ class ButtonRepository():
     _instance = None
 
     _button_state_lock = Lock()
-    _button_state = False
+    _button_states = {}
 
     def __new__(cls):
         if cls._instance is None:
@@ -21,15 +21,23 @@ class ButtonRepository():
                     cls._instance = super().__new__(cls)
         return cls._instance
 
-    @property
-    def button_state(self):
+    def update_button_state(self, button: Button, state: bool):
+        """
+        Update the state of a button.
+        """
         with self._button_state_lock:
-            return self._button_state
+            self._button_states[button] = state
 
-    @button_state.setter
-    def button_state(self, value):
+    def get_button_state(self, button: Button):
+        """
+        Get the state of a button.
+        """
         with self._button_state_lock:
-            self._button_state = value
-            LOGGER.debug("Button state: %s", value)
+            return self._button_states.get(button, False)
 
-BUTTON_REPOSITORY = ButtonRepository()
+    def has_button(self, button: Button):
+        """
+        Check if a button is in the repository.
+        """
+        with self._button_state_lock:
+            return button in self._button_states

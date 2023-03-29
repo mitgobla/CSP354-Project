@@ -3,74 +3,44 @@ Driver class for a button.
 Author: Benjamin Dodd (1901386)
 """
 
-import time
-
 from . import LOGGER
-from .button_repository import BUTTON_REPOSITORY
+from .button_repository import ButtonRepository
 
 try:
     import RPi.GPIO as GPIO
 except ImportError:
     from ..util.mock_gpio import MockGPIO as GPIO
 
-from ..threading.worker_manager import WORKER_MANAGER
-from ..threading.worker_thread import WorkerThread
-
 class Button:
     """
     Driver class for a button.
     """
 
-    class ButtonWorker(WorkerThread):
-        """
-        Worker thread for the button.
-        """
-
-        def __init__(self, button: "Button"):
-            """Create a new instance of the ButtonWorker class."""
-            super().__init__()
-            self.button = button
-
-        def work(self):
-            """
-            Run the worker thread.
-            """
-            while not self.is_stopped():
-                state = self.button.is_pressed()
-                if BUTTON_REPOSITORY.button_state != state:
-                    BUTTON_REPOSITORY.button_state = state
-                time.sleep(0.1)
-
     def __init__(self, pin: int):
         """Create a new instance of the Button class."""
         self.pin = pin
-        self.setup()
+        self.button_repository = ButtonRepository()
+        self._setup()
 
-        self.worker = self.ButtonWorker(self)
-        WORKER_MANAGER.add_worker(self.worker)
+    def __repr__(self):
+        return f"Button({self.pin})"
 
-    def setup(self):
+    def __str__(self):
+        return f"Button({self.pin})"
+
+    def _setup(self):
         """
         Set up the GPIO pins for the button.
         """
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(self.pin, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+        GPIO.add_event_detect(self.pin, GPIO.BOTH, callback = self._update_repository, bouncetime = 200)
 
-    def is_pressed(self) -> bool:
-        """
-        Check if the button is pressed.
-        """
-        state = GPIO.input(self.pin) == GPIO.LOW
-        return state
+        if not self.button_repository.has_button(self):
+            self.button_repository.update_button_state(self, False)
 
+    def _update_repository(self):
+        LOGGER.debug("Updating button state for %s", self)
+        self.button_repository.update_button_state(self, not GPIO.input(self.pin))
 
-BUTTON = Button(37)
-
-if __name__ == "__main__":
-    try:
-        while True:
-            print(BUTTON_REPOSITORY.button_state)
-            time.sleep(1)
-    except KeyboardInterrupt:
-        WORKER_MANAGER.stop_all_workers()
