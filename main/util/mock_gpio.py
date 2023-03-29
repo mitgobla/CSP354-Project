@@ -16,6 +16,7 @@ class MockGPIO:
     OUT = "OUT"
     LOW = "LOW"
     HIGH = "HIGH"
+    BOTH = "BOTH"
     IN = "IN"
     PUD_UP = "PUD_UP"
     PUD_DOWN = "PUD_DOWN"
@@ -72,3 +73,16 @@ class MockGPIO:
         state = choice([MockGPIO.HIGH, MockGPIO.LOW])
         LOGGER.debug("MockGPIO.input(%s) -> %s", pin, state)
         return state
+
+    @classmethod
+    def add_event_detect(cls, pin: int, mode: str, callback, bouncetime: int):
+        """Add an event detection callback to a GPIO pin.
+
+        Args:
+            pin (int): The pin number.
+            mode (str): The event mode. Must be either MockGPIO.RISING, MockGPIO.FALLING or MockGPIO.BOTH.
+            callback (function): The callback function to call when the event is detected.
+            bouncetime (int): The debounce time in milliseconds.
+        """
+        LOGGER.debug("MockGPIO.add_event_detect(%s, %s, %s, %s)", pin, mode, callback, bouncetime)
+

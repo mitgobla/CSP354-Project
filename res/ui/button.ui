@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Button</class>
+ <widget class="QWidget" name="Button">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>144</width>
+    <height>80</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>144</width>
+    <height>80</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>144</width>
+    <height>80</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Button</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Button Name</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QPushButton" name="pushButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset>
+          <normaloff>cross-button.png</normaloff>
+          <normalon>tick-button.png</normalon>cross-button.png</iconset>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

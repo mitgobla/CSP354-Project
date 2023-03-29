@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="circuit">
+    <file>circuit.svg</file>
+  </qresource>
+</RCC>
