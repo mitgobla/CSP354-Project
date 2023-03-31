@@ -8,6 +8,10 @@ import cv2 as cv
 
 from . import LOGGER
 
+CAMERA_FPS = 15
+CAMERA_WIDTH = 480
+CAMERA_HEIGHT = 240
+
 class VideoFrame:
     """Video Frame class, holds an image from the video feed
 
@@ -32,56 +36,56 @@ class VideoFrame:
         return cv.cvtColor(self.image, cv.COLOR_BGR2RGB)
 
 class VideoFeed:
-    """Singleton class that provides access to the video feed
-
-    Raises:
-        RuntimeError: Failed to open video feed, or failed to capture frame
+    """
+    Provides access to the video feed
     """
 
-    __feed = cv.VideoCapture(0)
-    __lock = threading.Lock()
-    __cache: VideoFrame = None
+    _feed = cv.VideoCapture(0)
+    _lock = threading.Lock()
+    _cache: VideoFrame = None
+    _initialized = False
+    _instance = None
+    _instance_lock = threading.Lock()
+
+    def __new__(cls):
+        if not VideoFeed._instance:
+            with VideoFeed._instance_lock:
+                if not VideoFeed._instance:
+                    VideoFeed._instance = super(VideoFeed, cls).__new__(cls)
+        return VideoFeed._instance
+
 
     def __init__(self):
-        self.__feed.set(cv.CAP_PROP_FPS, 15)
-        self.__feed.set(cv.CAP_PROP_FRAME_WIDTH, 480)
-        self.__feed.set(cv.CAP_PROP_FRAME_HEIGHT, 240)
-        if not self.__feed.isOpened():
-            LOGGER.error("Failed to open video feed")
-            raise RuntimeError("Failed to open video feed")
+        if not VideoFeed._initialized:
+            self._feed.set(cv.CAP_PROP_FPS, CAMERA_FPS)
+            self._feed.set(cv.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
+            self._feed.set(cv.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
+            if not self._feed.isOpened():
+                LOGGER.error("Failed to open video feed")
+                raise RuntimeError("Failed to open video feed")
+            VideoFeed._initialized = True
 
     def __del__(self):
-        self.__feed.release()
+        self._feed.release()
+        VideoFeed._initialized = False
 
-    def capture(self) -> VideoFrame:
+    def capture(self):
         """
         Captures a frame from the video feed
 
         Returns:
             VideoFrame: Frame from the video feed
         """
-        with self.__lock:
-            if self.__feed.isOpened():
-                success, frame_capture = self.__feed.read()
+        with self._lock:
+            if self._feed.isOpened():
+                success, frame_capture = self._feed.read()
                 if success:
                     frame_capture = VideoFrame(frame_capture)
-                    self.__cache = frame_capture
+                    self._cache = frame_capture
                     return frame_capture
 
                 # If we failed to capture a frame, return the last frame we captured
-                if self.__cache:
-                    return self.__cache
+                if self._cache:
+                    return self._cache
 
                 LOGGER.error("Failed to capture frame")
-                raise RuntimeError("Failed to capture frame")
-
-VIDEO_FEED = VideoFeed()
-
-if __name__ == "__main__":
-    while True:
-        frame = VIDEO_FEED.capture()
-        cv.imshow("Video", frame.image)
-        if cv.waitKey(1) & 0xFF == ord('q'):
-            break
-    cv.destroyAllWindows()
-    del VIDEO_FEED

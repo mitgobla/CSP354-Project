@@ -45,7 +45,7 @@ class WorkerManager:
         worker.manager = self
         worker.start()
         self.__workers.append(worker)
-        LOGGER.debug("Worker added: %s", worker)
+        # LOGGER.debug("Worker added: %s", worker)
 
     def stop_all_workers(self):
         """
@@ -74,11 +74,11 @@ class WorkerManager:
         Args:
             thread (WorkerThread): Worker to delete.
         """
-        LOGGER.debug("Removing worker: %s", thread)
+        # LOGGER.debug("Removing worker: %s", thread)
         if thread in self.__workers:
             if not thread.is_stopped():
                 thread.stop()
             self.__workers.remove(thread)
-            LOGGER.debug("Worker removed: %s", thread)
+            # LOGGER.debug("Worker removed: %s", thread)
 
 WORKER_MANAGER = WorkerManager()
