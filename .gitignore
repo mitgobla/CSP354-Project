@@ -157,3 +157,6 @@ data/
 
 # .drawio files
 *.drawio
+
+# VSCode Workspace
+*.code-workspace
