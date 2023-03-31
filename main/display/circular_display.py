@@ -13,12 +13,8 @@ from . import LOGGER
 
 try:
     import ST7789
-    LOGGER.debug("ST7789 library found, using library")
-    RASPI_LIB = True
 except ImportError:
     from ..util import mock_st77789 as ST7789
-    LOGGER.debug("ST7789 library not found, using mock library")
-    RASPI_LIB = False
 
 from ..threading.worker_manager import WORKER_MANAGER
 from ..threading.worker_thread import WorkerThread
@@ -27,19 +23,6 @@ class Display(object):
     """
     Circular Display Driver
     """
-
-    class DisplayWorker(WorkerThread):
-
-        def __init__(self, display: "Display"):
-            super().__init__()
-            self.display = display
-
-        def work(self):
-            if self.display.image is not None:
-                if RASPI_LIB:
-                    self.display.st7798.display(cv.resize(self.display.image, (self.display.diameter, self.display.diameter)))
-                else:
-                    self.display.st7798.display(self.display.image)
 
     def __init__(self, diameter: int, rotation: int, port: int, cs_pin: int, dc_pin: int, backlight: int):
         self.diameter = diameter
@@ -64,11 +47,11 @@ class Display(object):
             offset_top=self.offset_top
         )
 
-        self.__lock = threading.Lock()
-        self.__image = None
-        self.clear()
+        self.worker = None
 
-        LOGGER.debug("Display created")
+        self._lock = threading.Lock()
+        self._image = None
+        self.clear()
 
     @property
     def image(self):
@@ -77,8 +60,8 @@ class Display(object):
         Returns:
             Image: The image to be displayed on the display.
         """
-        with self.__lock:
-            return self.__image
+        with self._lock:
+            return self._image
 
     @image.setter
     def image(self, image: cv.Mat):
@@ -87,10 +70,13 @@ class Display(object):
         Args:
             image (Image): The image to be displayed on the display.
         """
-        with self.__lock:
-            self.__image = image
-            worker = self.DisplayWorker(self)
-            WORKER_MANAGER.add_worker(worker)
+        with self._lock:
+            self._image = image
+            if self.worker is not None:
+                if self.worker.is_running():
+                    return
+            self.worker = DisplayWorker(self)
+            WORKER_MANAGER.add_worker(self.worker)
 
     def display_number(self, number: int, colour: tuple = (255, 255, 255)):
         """Displays a number on the display.
@@ -114,32 +100,81 @@ class Display(object):
         blank = cv.cvtColor(np.asarray(blank), cv.COLOR_RGB2BGR)
         self.image = blank
 
+class DisplayWorker(WorkerThread):
+
+    def __init__(self, display: Display):
+        super().__init__()
+        self.running = True
+        self.display = display
+
+    def is_running(self):
+        """
+        Returns whether the worker is running or not.
+        """
+        return self.running
+
+    def work(self):
+        if self.display.image is not None:
+                self.display.st7798.display(cv.resize(self.display.image, (self.display.diameter, self.display.diameter)))
+        self.running = False
+
 class LeftDisplay(Display):
     """
     Left Circular Display Driver
     """
+
+    _instance = None
+    _instance_lock = threading.Lock()
+    _initialized = False
+
+    def __new__(cls):
+        if cls._instance is None:
+            with cls._instance_lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+        return cls._instance
+
     def __init__(self):
-        super().__init__(diameter=240, rotation=90, port=0, cs_pin=1, dc_pin=9, backlight=19)
-        LOGGER.debug("Left Display created")
+        if not self._initialized:
+            super().__init__(diameter=240, rotation=90, port=0, cs_pin=1, dc_pin=9, backlight=19)
+            LOGGER.debug("Left Display created")
 
 class RightDisplay(Display):
     """
     Right Circular Display Driver
     """
-    def __init__(self):
-        super().__init__(diameter=240, rotation=90, port=0, cs_pin=0, dc_pin=9, backlight=18)
-        LOGGER.debug("Right Display created")
+    _instance = None
+    _instance_lock = threading.Lock()
+    _initialized = False
 
-RIGHT_DISPLAY = RightDisplay()
-LEFT_DISPLAY = LeftDisplay()
+    def __new__(cls):
+        if cls._instance is None:
+            with cls._instance_lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __init__(self):
+        if not self._initialized:
+            super().__init__(diameter=240, rotation=90, port=0, cs_pin=0, dc_pin=9, backlight=18)
+            LOGGER.debug("Right Display created")
+
 
 if __name__ == '__main__':
-    import time
-    from ..camera.video_feed import VIDEO_FEED
+    from ..camera.video_feed import VideoFeed
+
+    RIGHT_DISPLAY = RightDisplay()
+    LEFT_DISPLAY = LeftDisplay()
+    VIDEO_FEED = VideoFeed()
 
     while True:
         video_frame = VIDEO_FEED.capture()
         if video_frame:
             RIGHT_DISPLAY.image = video_frame.image
             LEFT_DISPLAY.image = cv.flip(video_frame.image, 1)
-        time.sleep(0.1)
+            cv.imshow("Video Feed", video_frame.image)
+            cv.imshow("Right Display", RIGHT_DISPLAY.image)
+            cv.imshow("Left Display", LEFT_DISPLAY.image)
+        if cv.waitKey(1) & 0xFF == ord('q'):
+            WORKER_MANAGER.stop_all_workers()
+            break
