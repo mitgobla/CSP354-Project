@@ -3,44 +3,41 @@ Class for a variable that is stored to disk.
 Author: Benjamin Dodd (1901386)
 """
 
-import json
-import os
 from threading import Lock
-from atexit import register
 
-from . import LOGGER
-from .variable_store import VARIABLE_STORE
+from .variable_store import VariableStore
 
 class StorableType(object):
 
     def __init__(self, name: str, default_value = None):
-        self.__lock = Lock()
-        self.__name = name
-        self.__value = default_value
+        self.store = VariableStore()
+        self._lock = Lock()
+        self._name = name
+        self._value = default_value
 
-        if self.__name in VARIABLE_STORE:
-            self.__value = VARIABLE_STORE[self.__name]
+        if self._name in self.store:
+            self._value = self.store[self._name]
         else:
-            VARIABLE_STORE[self.__name] = self.__value
+            self.store[self._name] = self._value
 
 
 
     @property
     def value(self):
-        with self.__lock:
-            return self.__value
+        with self._lock:
+            return self._value
 
     @value.setter
     def value(self, value):
-        with self.__lock:
-            self.__value = value
-            VARIABLE_STORE[self.__name] = self.__value
+        with self._lock:
+            self._value = value
+            self.store[self._name] = self._value
 
     def __str__(self):
         return str(self.value)
 
     def __repr__(self):
-        return f"StorableType({self.__name}, {self.__value})"
+        return f"StorableType({self._name}, {self._value})"
 
     def __eq__(self, other):
         return self.value == other

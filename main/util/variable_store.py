@@ -13,19 +13,32 @@ STORE_PATH = path.join("data", "variable_store.json")
 
 class VariableStore:
 
-    def __init__(self):
-        self.__lock = Lock()
-        self.__data = {}
+    _instance = None
+    _instance_lock = Lock()
+    _initialized = False
 
-        if path.exists(STORE_PATH):
-            with open(STORE_PATH, "r") as file:
-                self.__data = json.load(file)
-        else:
-            LOGGER.warning("variable_store.json not found, creating new file.")
-            if not path.exists(path.dirname(STORE_PATH)):
-                makedirs(path.dirname(STORE_PATH))
-            with open(STORE_PATH, "w", encoding='utf-8') as file:
-                json.dump(self.__data, file)
+    def __new__(cls):
+        if cls._instance is None:
+            with cls._instance_lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def __init__(self):
+        if not self._initialized:
+            self.__lock = Lock()
+            self.__data = {}
+
+            if path.exists(STORE_PATH):
+                with open(STORE_PATH, "r", encoding="utf-8") as file:
+                    self.__data = json.load(file)
+            else:
+                LOGGER.warning("variable_store.json not found, creating new file.")
+                if not path.exists(path.dirname(STORE_PATH)):
+                    makedirs(path.dirname(STORE_PATH))
+                with open(STORE_PATH, "w", encoding='utf-8') as file:
+                    json.dump(self.__data, file)
+            self._initialized = True
 
     def __getitem__(self, key):
         with self.__lock:
@@ -35,7 +48,7 @@ class VariableStore:
         with self.__lock:
             self.__data[key] = value
 
-            with open(STORE_PATH, "w") as file:
+            with open(STORE_PATH, "w", encoding="utf-8") as file:
                 json.dump(self.__data, file)
 
     def __contains__(self, key):
@@ -46,7 +59,7 @@ class VariableStore:
         with self.__lock:
             del self.__data[key]
 
-            with open(STORE_PATH, "w") as file:
+            with open(STORE_PATH, "w", encoding="utf-8") as file:
                 json.dump(self.__data, file)
 
     def __iter__(self):
@@ -56,5 +69,3 @@ class VariableStore:
     def __len__(self):
         with self.__lock:
             return len(self.__data)
-
-VARIABLE_STORE = VariableStore()
