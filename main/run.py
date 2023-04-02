@@ -14,7 +14,7 @@ from .camera.emotion_detection import EmotionDetection
 
 from .activities.clock import ClockActivity
 from .activities.emotion_reaction import EmotionReactionActivity
-from activities.number_guessing import NumberGuessingActivity
+from .activities.number_guessing import NumberGuessingActivity
 
 from .threading.worker_manager import WorkerManager
 
