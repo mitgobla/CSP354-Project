@@ -14,7 +14,7 @@ except ImportError:
     from ..util.mock_gpio import MockGPIO as GPIO
 
 from ..util.storable_type import StorableType
-from ..threading.worker_manager import WORKER_MANAGER
+from ..threading.worker_manager import WorkerManager
 from ..threading.worker_thread import WorkerThread
 
 CLOCKWISE = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
@@ -29,7 +29,7 @@ class StepperMotor:
     Driver class for stepper motors.
     """
 
-    def __init__(self, in1: int = 11, in2: int = 13, in3: int = 15, in4: int = 16, speed: float = 0.0005):
+    def __init__(self, worker_manager: WorkerManager, in1: int = 11, in2: int = 13, in3: int = 15, in4: int = 16, speed: float = 0.0005):
         """Create a new instance of the StepperMotor class."""
         self.in1 = in1
         self.in2 = in2
@@ -38,6 +38,7 @@ class StepperMotor:
         self.speed = speed if speed >= 0.0005 else 0.0005
         self.steps = StorableType("stepper_motor_steps", 0)
 
+        self.worker_manager = worker_manager
         self.worker = None
         self.setup()
 
@@ -62,7 +63,7 @@ class StepperMotor:
             self.worker.stop()
 
         self.worker = StepperMotorWorker(self, StepperMotorDirection.TURN_CLOCKWISE, steps)
-        WORKER_MANAGER.add_worker(self.worker)
+        self.worker_manager.add_worker(self.worker)
         LOGGER.debug("Stepper motor stepped clockwise %d steps", steps)
 
     def step_anticlockwise(self, steps: int = 1):
@@ -75,7 +76,7 @@ class StepperMotor:
             self.worker.stop()
 
         self.worker = StepperMotorWorker(self, StepperMotorDirection.TURN_ANTICLOCKWISE, steps)
-        WORKER_MANAGER.add_worker(self.worker)
+        self.worker_manager.add_worker(self.worker)
         LOGGER.debug("Stepper motor stepped anticlockwise %d steps", steps)
 
 class StepperMotorWorker(WorkerThread):
@@ -143,4 +144,4 @@ if __name__ == "__main__":
     time.sleep(3)
     STEPPER_MOTOR.step_anticlockwise(10)
     time.sleep(3)
-    WORKER_MANAGER.stop_all_workers()
+    STEPPER_MOTOR.worker_manager.stop_all_workers()

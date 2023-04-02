@@ -16,7 +16,7 @@ try:
 except ImportError:
     from ..util import mock_st77789 as ST7789
 
-from ..threading.worker_manager import WORKER_MANAGER
+from ..threading.worker_manager import WorkerManager
 from ..threading.worker_thread import WorkerThread
 
 class Display(object):
@@ -24,7 +24,7 @@ class Display(object):
     Circular Display Driver
     """
 
-    def __init__(self, diameter: int, rotation: int, port: int, cs_pin: int, dc_pin: int, backlight: int):
+    def __init__(self, worker_manager: WorkerManager, diameter: int, rotation: int, port: int, cs_pin: int, dc_pin: int, backlight: int):
         self.diameter = diameter
         self.rotation = rotation
         self.port = port
@@ -47,6 +47,7 @@ class Display(object):
             offset_top=self.offset_top
         )
 
+        self.worker_manager = worker_manager
         self.worker = None
 
         self._lock = threading.Lock()
@@ -76,7 +77,7 @@ class Display(object):
                 if self.worker.is_running():
                     return
             self.worker = DisplayWorker(self)
-            WORKER_MANAGER.add_worker(self.worker)
+            self.worker_manager.add_worker(self.worker)
 
     def display_number(self, number: int, colour: tuple = (255, 255, 255)):
         """Displays a number on the display.
@@ -127,16 +128,16 @@ class LeftDisplay(Display):
     _instance_lock = threading.Lock()
     _initialized = False
 
-    def __new__(cls):
+    def __new__(cls, worker_manager: WorkerManager):
         if cls._instance is None:
             with cls._instance_lock:
                 if cls._instance is None:
-                    cls._instance = super().__new__(cls)
+                    cls._instance = super().__new__(cls, worker_manager)
         return cls._instance
 
-    def __init__(self):
+    def __init__(self, worker_manager: WorkerManager):
         if not self._initialized:
-            super().__init__(diameter=240, rotation=90, port=0, cs_pin=1, dc_pin=9, backlight=19)
+            super().__init__(worker_manager, diameter=240, rotation=90, port=0, cs_pin=1, dc_pin=9, backlight=19)
             LOGGER.debug("Left Display created")
 
 class RightDisplay(Display):
@@ -147,24 +148,26 @@ class RightDisplay(Display):
     _instance_lock = threading.Lock()
     _initialized = False
 
-    def __new__(cls):
+    def __new__(cls, worker_manager: WorkerManager):
         if cls._instance is None:
             with cls._instance_lock:
                 if cls._instance is None:
-                    cls._instance = super().__new__(cls)
+                    cls._instance = super().__new__(cls, worker_manager)
         return cls._instance
 
-    def __init__(self):
+    def __init__(self, worker_manager: WorkerManager):
         if not self._initialized:
-            super().__init__(diameter=240, rotation=90, port=0, cs_pin=0, dc_pin=9, backlight=18)
+            super().__init__(worker_manager, diameter=240, rotation=90, port=0, cs_pin=0, dc_pin=9, backlight=18)
             LOGGER.debug("Right Display created")
 
 
 if __name__ == '__main__':
     from ..camera.video_feed import VideoFeed
 
-    RIGHT_DISPLAY = RightDisplay()
-    LEFT_DISPLAY = LeftDisplay()
+    WORKER_MANAGER = WorkerManager()
+
+    RIGHT_DISPLAY = RightDisplay(WORKER_MANAGER)
+    LEFT_DISPLAY = LeftDisplay(WORKER_MANAGER)
     VIDEO_FEED = VideoFeed()
 
     while True:
@@ -176,5 +179,5 @@ if __name__ == '__main__':
             cv.imshow("Right Display", RIGHT_DISPLAY.image)
             cv.imshow("Left Display", LEFT_DISPLAY.image)
         if cv.waitKey(1) & 0xFF == ord('q'):
-            WORKER_MANAGER.stop_all_workers()
+            WORKER_MANAGER.worker_manager.stop_all_workers()
             break

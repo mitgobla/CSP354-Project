@@ -13,14 +13,16 @@ from .camera.gesture_detection import GestureDetection
 from .camera.emotion_detection import EmotionDetection
 
 
-from .threading import worker_manager
+from .threading.worker_manager import WorkerManager
+
+WORKER_MANAGER = WorkerManager()
 
 BUTTON = Button("main", 37)
-STEPPER_MOTOR = StepperMotor()
+STEPPER_MOTOR = StepperMotor(WORKER_MANAGER)
 
-LEFT_DISPLAY = LeftDisplay()
-RIGHT_DISPLAY = RightDisplay()
+LEFT_DISPLAY = LeftDisplay(WORKER_MANAGER)
+RIGHT_DISPLAY = RightDisplay(WORKER_MANAGER)
 
 VIDEO_FEED = VideoFeed()
-GESTURE_DETECTION = GestureDetection()
-EMOTION_DETECTION = EmotionDetection()
+GESTURE_DETECTION = GestureDetection(WORKER_MANAGER)
+EMOTION_DETECTION = EmotionDetection(WORKER_MANAGER)
