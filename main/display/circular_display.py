@@ -93,6 +93,19 @@ class Display(object):
         blank = cv.cvtColor(np.asarray(blank), cv.COLOR_RGB2BGR)
         self.image = cv.putText(blank, text, (text_x, text_y), cv.FONT_HERSHEY_SIMPLEX, 3, colour, 3, cv.LINE_AA)
 
+    def display_text(self, text: str, colour: tuple = (255, 255, 255)):
+        """Displays text on the display.
+
+        Args:
+            text (str): The text to display.
+        """
+        text_size = cv.getTextSize(text, cv.FONT_HERSHEY_SIMPLEX, 2, 2)
+        text_x = (self.diameter - text_size[0][0]) // 2
+        text_y = (self.diameter + text_size[0][1]) // 2
+        blank = Image.new("RGB", (self.diameter, self.diameter), (0, 0, 0))
+        blank = cv.cvtColor(np.asarray(blank), cv.COLOR_RGB2BGR)
+        self.image = cv.putText(blank, text, (text_x, text_y), cv.FONT_HERSHEY_SIMPLEX, 2, colour, 2, cv.LINE_AA)
+
     def clear(self):
         """
         Clears the display
