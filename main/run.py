@@ -12,6 +12,7 @@ from .camera.video_feed import VideoFeed
 from .camera.gesture_detection import GestureDetection
 from .camera.emotion_detection import EmotionDetection
 
+from .activities.clock import ClockActivity
 
 from .threading.worker_manager import WorkerManager
 
@@ -26,3 +27,5 @@ RIGHT_DISPLAY = RightDisplay(WORKER_MANAGER)
 VIDEO_FEED = VideoFeed()
 GESTURE_DETECTION = GestureDetection(WORKER_MANAGER)
 EMOTION_DETECTION = EmotionDetection(WORKER_MANAGER)
+
+CLOCK_ACTIVITY = ClockActivity(WORKER_MANAGER, LEFT_DISPLAY, RIGHT_DISPLAY, BUTTON)
