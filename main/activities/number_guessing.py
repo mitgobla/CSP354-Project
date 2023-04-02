@@ -3,83 +3,46 @@ Number guessing game where the user has to gesture with their fingers to guess t
 Author: Benjamin Dodd (1901386)
 """
 
-import cv2 as cv
 import time
 from random import randint
 
-from . import LOGGER
-from ..camera.video_feed import VIDEO_FEED
-from ..camera.gesture_detection import GESTURE_DETECTION
-from ..camera.gesture_repository import GESTURE_REPOSITORY
-from ..display.circular_display import LEFT_DISPLAY, RIGHT_DISPLAY
-from ..threading.worker_manager import WORKER_MANAGER
-from ..threading.worker_thread import WorkerThread
+from .activity import Activity
 
-class NumberGuessing:
+from ..threading.worker_manager import WorkerManager
+from ..display.circular_display import LeftDisplay, RightDisplay
+from ..camera.gesture_detection import GestureDetection
+from ..camera.video_feed import VideoFeed
 
-    class LeftDisplayWorker(WorkerThread):
-        def work(self):
-            while not self.is_stopped():
-                capture = VIDEO_FEED.capture()
-                if capture is not None:
-                    LEFT_DISPLAY.image = capture.image
-                    GESTURE_DETECTION.image = capture
-                time.sleep(0.15)
+class NumberGuessingActivity(Activity):
+    """
+    Number guessing game where the user has to gesture with their fingers to guess the number.
+    """
 
-    class RightDisplayWorker(WorkerThread):
+    def __init__(self, worker_manager: WorkerManager, left_display: LeftDisplay, right_display: RightDisplay, video_feed: VideoFeed, gesture_detection: GestureDetection):
+        super().__init__("NumberGuessing", worker_manager)
+        self.left_display = left_display
+        self.right_display = right_display
+        self.video_feed = video_feed
+        self.gesture_detection = gesture_detection
 
-        def __init__(self, number_guessing: "NumberGuessing"):
-            super().__init__()
-            self.number_guessing = number_guessing
+        self.random_number = randint(1, 8)
 
-        def work(self):
-            while not self.is_stopped():
-                if GESTURE_REPOSITORY.current_gesture == self.number_guessing.number:
-                    RIGHT_DISPLAY.display_number(GESTURE_REPOSITORY.current_gesture, (0, 255, 0))
-                else:
-                    RIGHT_DISPLAY.display_number(GESTURE_REPOSITORY.current_gesture, (0, 0, 255))
-                time.sleep(0.15)
-
-    def __init__(self):
-        self.number = randint(1, 8)
-
-        self.guess = 0
-        self.running = False
-
-        self.left_display_worker = self.LeftDisplayWorker()
-        self.right_display_worker = self.RightDisplayWorker(self)
-
-
-    def start(self):
-        WORKER_MANAGER.add_worker(self.left_display_worker)
-        WORKER_MANAGER.add_worker(self.right_display_worker)
-        self.running = True
-        self.run()
-
-    def stop(self):
-        LOGGER.debug("Stopping number guessing game")
-        self.running = False
-        WORKER_MANAGER.remove_worker(self.left_display_worker)
-        WORKER_MANAGER.remove_worker(self.right_display_worker)
-
-    def run(self):
+    def work(self):
         while self.running:
-            LOGGER.debug("Number to guess: %s", self.number)
-            while self.guess != self.number:
-                self.guess = GESTURE_REPOSITORY.current_gesture
-                LOGGER.info("Incorrect! Try again.")
-                while self.guess == GESTURE_REPOSITORY.current_gesture and self.guess != self.number:
-                    time.sleep(0.15)
+            capture = self.video_feed.capture()
+            self.gesture_detection.image = capture
+            finger_count = self.gesture_detection.finger_count
+            correct_guess = finger_count == self.random_number
+            colour = (0, 255, 0) if correct_guess else (0, 0, 255)
+            if finger_count is not None:
+                self.left_display.display_number(finger_count, colour)
+                self.right_display.image = capture
+            else:
+                self.left_display.display_number(0, colour)
+                self.right_display.image = capture
 
-            LOGGER.info("Correct! The number was %s", self.number)
-            time.sleep(3)
-            self.number = randint(1, 8)
+            if correct_guess:
+                self.random_number = randint(1, 8)
+                time.sleep(3)
 
-NUMBER_GUESSING = NumberGuessing()
-
-if __name__ == "__main__":
-    try:
-        NUMBER_GUESSING.start()
-    except KeyboardInterrupt:
-        NUMBER_GUESSING.stop()
-        WORKER_MANAGER.stop_all_workers()
+            time.sleep(0.15)
