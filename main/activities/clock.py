@@ -1,114 +1,62 @@
 """
-Display a clock on the circular displays.
+Clock activity
 Author: Benjamin Dodd (1901386)
 """
-
 import time
-import datetime
 from enum import Enum
+from datetime import datetime
 
-from . import LOGGER
-from ..display.circular_display import LEFT_DISPLAY, RIGHT_DISPLAY
-from ..threading.worker_manager import WORKER_MANAGER
-from ..threading.worker_thread import WorkerThread
-from ..button.button_repository import BUTTON_REPOSITORY
-from ..button.button import BUTTON
+from .activity import Activity
+
+from ..display.circular_display import LeftDisplay, RightDisplay
+from ..button.button import Button
+
+from ..threading.worker_manager import WorkerManager
 
 class ClockMode(Enum):
     """
-    The clock mode.
+    Enum for the different clock modes.
     """
-    HOUR_24 = 0
-    HOUR_12 = 1
+    CLOCK_12_HOUR = 0
+    CLOCK_24_HOUR = 1
 
-class Clock:
+class ClockActivity(Activity):
+    """
+    Clock activity
+    Displays the hour and minute on the circular displays.
+    Button is used to change the clock mode.
+    """
 
-    class ClockWorker(WorkerThread):
-        """
-        Displays the current time on the circular display.
-        """
+    def __init__(self, worker_manager: WorkerManager, left_display: LeftDisplay, right_display: RightDisplay, button: Button):
+        super().__init__("clock", worker_manager)
+        self.left_display = left_display
+        self.right_display = right_display
+        self.button = button
 
-        def __init__(self, clock: "Clock"):
-            super().__init__()
-            self.clock = clock
+        self.mode = ClockMode.CLOCK_12_HOUR
 
-        def work(self):
-            while not self.is_stopped():
-                now = datetime.datetime.now()
-                hour = now.hour
-                minute = now.minute
-
-                if self.clock.mode == ClockMode.HOUR_12:
-                    if hour > 12:
-                        hour -= 12
-
-                RIGHT_DISPLAY.display_number(hour)
-                LEFT_DISPLAY.display_number(minute)
-                time.sleep(1)
-
-    class ClockModeWorker(WorkerThread):
-        """
-        Displays the current time on the circular display.
-        """
-
-        def __init__(self, clock: "Clock"):
-            super().__init__()
-            self.clock = clock
-
-        def work(self):
-            while not self.is_stopped():
-                if BUTTON_REPOSITORY.button_state:
-                    if self.clock.mode == ClockMode.HOUR_12:
-                        self.clock.mode = ClockMode.HOUR_24
-                    else:
-                        self.clock.mode = ClockMode.HOUR_12
-                    LOGGER.debug("Clock mode changed to %s", self.clock.mode)
-                while BUTTON_REPOSITORY.button_state:
-                    time.sleep(0.1)
-                time.sleep(1)
-
-    def __init__(self):
-        self.running = False
-        self.mode = ClockMode.HOUR_24
-
-        self.clock_worker = self.ClockWorker(self)
-        self.clock_mode_worker = self.ClockModeWorker(self)
-
-    def start(self):
-        """
-        Starts the clock.
-        """
-        LOGGER.info("Starting clock")
-        self.running = True
-        self.clock_worker = self.ClockWorker(self)
-        self.clock_mode_worker = self.ClockModeWorker(self)
-        WORKER_MANAGER.add_worker(self.clock_worker)
-        WORKER_MANAGER.add_worker(self.clock_mode_worker)
-        self.run()
-
-    def stop(self):
-        """
-        Stops the clock.
-        """
-        LOGGER.info("Stopping clock")
-        self.running = False
-        WORKER_MANAGER.remove_worker(self.clock_worker)
-        WORKER_MANAGER.remove_worker(self.clock_mode_worker)
-
-    def run(self):
-        """
-        Starts the clock.
-        """
+    def work(self):
         while self.running:
+            current_time = self.get_time()
+            self.left_display.display_number(current_time[0])
+            self.right_display.display_number(current_time[1])
+
+            if self.button.is_pressed():
+                self.change_mode()
             time.sleep(1)
 
-CLOCK = Clock()
+    def get_time(self):
+        """
+        Gets the current time.
+        """
+        if self.mode == ClockMode.CLOCK_12_HOUR:
+            hour, minute = datetime.now().strftime("%I:%M").split(":")
+        else:
+            hour, minute = datetime.now().strftime("%H:%M").split(":")
+        return (hour, minute)
 
-if __name__ == "__main__":
-    try:
-        LOGGER.debug("Starting clock")
-        CLOCK.start()
-    except KeyboardInterrupt:
-        CLOCK.stop()
-        LOGGER.debug("Exiting clock")
-    WORKER_MANAGER.stop_all_workers()
+    def change_mode(self):
+        """
+        Changes the clock mode.
+        """
+        self.mode = ClockMode.CLOCK_24_HOUR if self.mode == ClockMode.CLOCK_12_HOUR else ClockMode.CLOCK_12_HOUR

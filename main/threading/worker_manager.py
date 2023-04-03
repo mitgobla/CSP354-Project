@@ -6,6 +6,7 @@ Author: Benjamin Dodd (1901386)
 import time
 from typing import List
 from atexit import register
+from threading import Lock
 
 from . import LOGGER
 
@@ -15,6 +16,11 @@ class WorkerManager:
     """
     Manager class for the worker threads.
     """
+
+    _instance = None
+    _instance_lock = Lock()
+    _intitialized = False
+
     class WorkerManagerWatcher(WorkerThread):
         """
         Worker thread that watches the worker threads.
@@ -29,12 +35,19 @@ class WorkerManager:
                 LOGGER.debug("WorkerManager: thread count: %s", len(self.manager))
                 time.sleep(3)
 
+    def __new__(cls):
+        if cls._instance is None:
+            with cls._instance_lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+        return cls._instance
 
     def __init__(self):
-        self.__workers: List[WorkerThread] = []
-        register(self.stop_all_workers)
-        self.watcher = self.WorkerManagerWatcher(self)
-        self.watcher.start()
+        if not self._intitialized:
+            self.__workers: List[WorkerThread] = []
+            register(self.stop_all_workers)
+            self.watcher = self.WorkerManagerWatcher(self)
+            self.watcher.start()
 
     def __len__(self):
         return len(self.__workers)
@@ -80,5 +93,3 @@ class WorkerManager:
                 thread.stop()
             self.__workers.remove(thread)
             # LOGGER.debug("Worker removed: %s", thread)
-
-WORKER_MANAGER = WorkerManager()

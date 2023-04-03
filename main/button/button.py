@@ -2,7 +2,7 @@
 Driver class for a button.
 Author: Benjamin Dodd (1901386)
 """
-
+import time
 from threading import Lock
 
 from . import LOGGER
@@ -22,6 +22,7 @@ class Button:
 
         self.name = name
         self.pin = pin
+        self.start_press_time = 0
 
         self._lock = Lock()
         self._state = False
@@ -45,6 +46,9 @@ class Button:
     def _update_state(self):
         with self._lock:
             self._state = not GPIO.input(self.pin)
+            if self._state:
+                self.start_press_time = time.time()
+
 
     @property
     def state(self):
@@ -67,3 +71,9 @@ class Button:
         """
         while self.state:
             pass
+
+    def has_been_pressed_for(self, seconds: float):
+        """
+        Check if the button has been pressed for a given amount of time.
+        """
+        return self.state and time.time() - self.start_press_time >= seconds

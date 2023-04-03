@@ -12,7 +12,7 @@ from . import LOGGER
 
 from .video_feed import VideoFrame
 
-from ..threading.worker_manager import WORKER_MANAGER
+from ..threading.worker_manager import WorkerManager
 from ..threading.worker_thread import WorkerThread
 
 DETECTOR = FER()
@@ -30,15 +30,16 @@ class EmotionDetection:
     _instance_lock = threading.Lock()
     _intitialized = False
 
-    def __new__(cls):
+    def __new__(cls, worker_manager: WorkerManager):
         if cls._instance is None:
             with cls._instance_lock:
                 if cls._instance is None:
-                    cls._instance = super().__new__(cls)
+                    cls._instance = super().__new__(cls, worker_manager)
         return cls._instance
 
-    def __init__(self):
+    def __init__(self, worker_manager: WorkerManager):
         if not self._intitialized:
+            self.worker_manager = worker_manager
             self.worker = None
             self._intitialized = True
 
@@ -62,7 +63,7 @@ class EmotionDetection:
 
             self._image = frame.image
             self.worker = EmotionDetectionWorker(self)
-            WORKER_MANAGER.add_worker(self.worker)
+            self.worker_manager.add_worker(self.worker)
 
     @property
     def current_emotion(self):
@@ -127,5 +128,5 @@ if __name__ == "__main__":
             cv.putText(video_frame.image, EMOTION_DETECTION.current_emotion, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             cv.imshow('Video', video_frame.image)
         if cv.waitKey(1) & 0xFF == ord('q'):
-            WORKER_MANAGER.stop_all_workers()
+            EMOTION_DETECTION.worker_manager.stop_all_workers()
             break
