@@ -5,7 +5,7 @@ Author: Benjamin Dodd (1901386)
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from .ui_button import Button
-from .ui_debug import Ui_Debug
+from .ui_debug import Debug
 from .ui_display import Ui_Display
 from .ui_main import Ui_MainWindow
 from .ui_mock_gpio import Ui_Board
@@ -27,6 +27,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Setup the subwindows
         """
         self.setupButtonSubWindow()
+        self.setupDebugSubWindow()
 
     def setupButtonSubWindow(self):
         """
@@ -41,4 +42,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # set flags to prevent closing
         buttonSubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
         self.mdiArea.addSubWindow(buttonSubWindow)
+
+    def setupDebugSubWindow(self):
+        """
+        Setup the debug subwindow
+        """
+        debug = Debug("Debug")
+        debugSubWindow = QtWidgets.QMdiSubWindow()
+        debugSubWindow.setWidget(debug)
+        debugSubWindow.setWindowTitle("Debug")
+        debugSubWindow.setFixedHeight(debug.height() + 30)
+        debugSubWindow.setFixedWidth(debug.width() + 10)
+        # set flags to prevent closing
+        debugSubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
+        self.mdiArea.addSubWindow(debugSubWindow)
 
