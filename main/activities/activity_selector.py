@@ -49,6 +49,7 @@ class ActivitySelector(Activity):
         self.current_activity_index = 0
 
     def work(self):
+        LOGGER.debug("Starting activity selector")
         while self.running:
             self.left_display.display_number(self.current_activity_index + 1)
             self.right_display.display_text(self.activities[self.current_activity_index].name)

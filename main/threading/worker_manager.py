@@ -35,19 +35,22 @@ class WorkerManager:
                 LOGGER.debug("WorkerManager: thread count: %s", len(self.manager))
                 time.sleep(3)
 
-    def __new__(cls):
+    def __new__(cls, debug: bool = False):
         if cls._instance is None:
             with cls._instance_lock:
                 if cls._instance is None:
                     cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self):
+    def __init__(self, debug: bool = False):
         if not self._intitialized:
             self.__workers: List[WorkerThread] = []
             register(self.stop_all_workers)
-            self.watcher = self.WorkerManagerWatcher(self)
-            self.watcher.start()
+            self.debug = debug
+            if debug:
+                self.watcher = self.WorkerManagerWatcher(self)
+                self.watcher.start()
+            self._intitialized = True
 
     def __len__(self):
         return len(self.__workers)
@@ -55,6 +58,8 @@ class WorkerManager:
     def add_worker(self, worker: WorkerThread):
         """Adds a WorkerThread to the manager.
         """
+        if worker in self.__workers:
+            raise ValueError("Worker already added")
         worker.manager = self
         worker.start()
         self.__workers.append(worker)
@@ -66,7 +71,8 @@ class WorkerManager:
         """
         for thread in self.__workers:
             thread.stop()
-        self.watcher.stop()
+        if self.debug:
+            self.watcher.stop()
         LOGGER.debug("All workers stopped")
 
     def is_stopped(self):

@@ -46,6 +46,7 @@ def main():
     ACTIVITY_SELECTOR.start()
     LOGGER.info("Application started")
     ACTIVITY_SELECTOR.join()
+    WORKER_MANAGER.stop_all_workers()
 
 if __name__ == "__main__":
     main()

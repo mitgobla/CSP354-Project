@@ -37,7 +37,7 @@ class GestureDetection:
         if cls._instance is None:
             with cls._instance_lock:
                 if cls._instance is None:
-                    cls._instance = super().__new__(cls, worker_manager)
+                    cls._instance = super().__new__(cls)
         return cls._instance
 
     def __init__(self, worker_manager: WorkerManager):
