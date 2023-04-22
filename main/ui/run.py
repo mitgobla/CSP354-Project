@@ -6,7 +6,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from .ui_button import Button
 from .ui_debug import Debug
-from .ui_display import Ui_Display
+from .ui_display import Display
 from .ui_main import Ui_MainWindow
 from .ui_mock_gpio import Ui_Board
 from .ui_motor import Ui_Motor
@@ -28,6 +28,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         self.setupButtonSubWindow()
         self.setupDebugSubWindow()
+        self.setupDisplaySubWindow("Right Display")
+        self.setupDisplaySubWindow("Left Display")
 
     def setupButtonSubWindow(self):
         """
@@ -56,4 +58,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # set flags to prevent closing
         debugSubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
         self.mdiArea.addSubWindow(debugSubWindow)
+
+    def setupDisplaySubWindow(self, name: str):
+        """
+        Setup the display subwindow
+        """
+        display = Display(name)
+        displaySubWindow = QtWidgets.QMdiSubWindow()
+        displaySubWindow.setWidget(display)
+        displaySubWindow.setWindowTitle(name)
+        displaySubWindow.setFixedHeight(display.height() + 30)
+        displaySubWindow.setFixedWidth(display.width() + 10)
+        # set flags to prevent closing
+        displaySubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
+        self.mdiArea.addSubWindow(displaySubWindow)
 
