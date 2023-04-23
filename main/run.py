@@ -3,6 +3,9 @@ Main script to run the application
 Author: Benjamin Dodd (1901386)
 """
 
+import sys
+from PyQt5.QtWidgets import QApplication
+
 from . import LOGGER, IS_RASPBERRY_PI
 
 from .button.button import Button
@@ -18,6 +21,8 @@ from .activities.number_guessing import NumberGuessingActivity
 from .activities.activity_selector import ActivitySelector
 
 from .threading.worker_manager import WorkerManager
+
+from .ui.run import MainWindow
 
 WORKER_MANAGER = WorkerManager()
 
@@ -38,7 +43,7 @@ NUMBER_GUESSING_ACTIVITY = NumberGuessingActivity(WORKER_MANAGER, LEFT_DISPLAY, 
 ACTIVITIES = [CLOCK_ACTIVITY, EMOTION_REACTION_ACTIVITY, NUMBER_GUESSING_ACTIVITY]
 ACTIVITY_SELECTOR = ActivitySelector(WORKER_MANAGER, ACTIVITIES, LEFT_DISPLAY, RIGHT_DISPLAY, BUTTON)
 
-def main():
+def raspberry_pi_main():
     """
     Main function to run the application
     """
@@ -48,5 +53,19 @@ def main():
     ACTIVITY_SELECTOR.join()
     WORKER_MANAGER.stop_all_workers()
 
+APPLICATION = QApplication(sys.argv)
+WINDOW = MainWindow()
+
+def emulator_main():
+    """
+    Main function to run the application in an emulator
+    """
+    LOGGER.info("Starting application")
+    WINDOW.show()
+    sys.exit(APPLICATION.exec_())
+
 if __name__ == "__main__":
-    main()
+    if IS_RASPBERRY_PI:
+        raspberry_pi_main()
+    else:
+        emulator_main()
