@@ -379,6 +379,49 @@ class Ui_Board(object):
         self.label_39.setBuddy(self.pushButton_1)
         self.label_40.setBuddy(self.pushButton_1)
 
+        self.buttons = [
+            self.pushButton_1,
+            self.pushButton_2,
+            self.pushButton_3,
+            self.pushButton_4,
+            self.pushButton_5,
+            self.pushButton_6,
+            self.pushButton_7,
+            self.pushButton_8,
+            self.pushButton_9,
+            self.pushButton_10,
+            self.pushButton_11,
+            self.pushButton_12,
+            self.pushButton_13,
+            self.pushButton_14,
+            self.pushButton_15,
+            self.pushButton_16,
+            self.pushButton_17,
+            self.pushButton_18,
+            self.pushButton_19,
+            self.pushButton_20,
+            self.pushButton_21,
+            self.pushButton_22,
+            self.pushButton_23,
+            self.pushButton_24,
+            self.pushButton_25,
+            self.pushButton_26,
+            self.pushButton_27,
+            self.pushButton_28,
+            self.pushButton_29,
+            self.pushButton_30,
+            self.pushButton_31,
+            self.pushButton_32,
+            self.pushButton_33,
+            self.pushButton_34,
+            self.pushButton_35,
+            self.pushButton_36,
+            self.pushButton_37,
+            self.pushButton_38,
+            self.pushButton_39,
+            self.pushButton_40
+        ]
+
         self.retranslateUi(Board)
         QtCore.QMetaObject.connectSlotsByName(Board)
 
@@ -465,3 +508,11 @@ class Ui_Board(object):
         self.label_38.setText(_translate("Board", "GPIO 20"))
         self.label_39.setText(_translate("Board", "GND"))
         self.label_40.setText(_translate("Board", "GPIO 21"))
+
+class BoardWindow(QtWidgets.QWidget, Ui_Board):
+    """
+    GPIO Board Widget
+    """
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi(self)

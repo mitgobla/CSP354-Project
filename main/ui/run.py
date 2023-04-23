@@ -8,7 +8,7 @@ from .ui_button import Button
 from .ui_debug import Debug
 from .ui_display import Display
 from .ui_main import Ui_MainWindow
-from .ui_mock_gpio import Ui_Board
+from .ui_mock_gpio import BoardWindow
 from .ui_motor import Ui_Motor
 from .ui_worker_manager import Ui_WorkerManager
 
@@ -30,6 +30,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupDebugSubWindow()
         self.setupDisplaySubWindow("Right Display")
         self.setupDisplaySubWindow("Left Display")
+        self.setupBoardSubWindow()
 
     def setupButtonSubWindow(self):
         """
@@ -72,4 +73,18 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # set flags to prevent closing
         displaySubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
         self.mdiArea.addSubWindow(displaySubWindow)
+
+    def setupBoardSubWindow(self):
+        """
+        Setup the GPIO board subwindow
+        """
+        board = BoardWindow()
+        boardSubWindow = QtWidgets.QMdiSubWindow()
+        boardSubWindow.setWidget(board)
+        boardSubWindow.setWindowTitle("GPIO Board")
+        boardSubWindow.setFixedHeight(board.height() + 30)
+        boardSubWindow.setFixedWidth(board.width() + 10)
+        # set flags to prevent closing
+        boardSubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
+        self.mdiArea.addSubWindow(boardSubWindow)
 
