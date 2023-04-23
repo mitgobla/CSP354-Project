@@ -9,7 +9,7 @@ from .ui_debug import Debug
 from .ui_display import Display
 from .ui_main import Ui_MainWindow
 from .ui_mock_gpio import BoardWindow
-from .ui_motor import Ui_Motor
+from .ui_motor import Motor
 from .ui_worker_manager import Ui_WorkerManager
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -20,7 +20,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         super().__init__(parent)
         self.setupUi(self)
         self.setupSubwindows()
-        self.mdiArea.tileSubWindows()
+        # self.mdiArea.tileSubWindows()
 
     def setupSubwindows(self):
         """
@@ -31,6 +31,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupDisplaySubWindow("Right Display")
         self.setupDisplaySubWindow("Left Display")
         self.setupBoardSubWindow()
+        self.setupMotorSubWindow()
 
     def setupButtonSubWindow(self):
         """
@@ -42,7 +43,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         buttonSubWindow.setWindowTitle("Button")
         buttonSubWindow.setFixedHeight(button.height() + 30)
         buttonSubWindow.setFixedWidth(button.width() + 10)
-        # set flags to prevent closing
         buttonSubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
         self.mdiArea.addSubWindow(buttonSubWindow)
 
@@ -56,7 +56,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         debugSubWindow.setWindowTitle("Debug")
         debugSubWindow.setFixedHeight(debug.height() + 30)
         debugSubWindow.setFixedWidth(debug.width() + 10)
-        # set flags to prevent closing
         debugSubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
         self.mdiArea.addSubWindow(debugSubWindow)
 
@@ -67,10 +66,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         display = Display(name)
         displaySubWindow = QtWidgets.QMdiSubWindow()
         displaySubWindow.setWidget(display)
-        displaySubWindow.setWindowTitle(name)
+        displaySubWindow.setWindowTitle("Display")
         displaySubWindow.setFixedHeight(display.height() + 30)
         displaySubWindow.setFixedWidth(display.width() + 10)
-        # set flags to prevent closing
         displaySubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
         self.mdiArea.addSubWindow(displaySubWindow)
 
@@ -84,7 +82,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         boardSubWindow.setWindowTitle("GPIO Board")
         boardSubWindow.setFixedHeight(board.height() + 30)
         boardSubWindow.setFixedWidth(board.width() + 10)
-        # set flags to prevent closing
         boardSubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
         self.mdiArea.addSubWindow(boardSubWindow)
+
+    def setupMotorSubWindow(self):
+        """
+        Setup the motor subwindow
+        """
+        motor = Motor("Stepper Motor")
+        motorSubWindow = QtWidgets.QMdiSubWindow()
+        motorSubWindow.setWidget(motor)
+        motorSubWindow.setWindowTitle("Motor")
+        motorSubWindow.setFixedHeight(motor.height() + 30)
+        motorSubWindow.setFixedWidth(motor.width() + 10)
+        motorSubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
+        self.mdiArea.addSubWindow(motorSubWindow)
 
