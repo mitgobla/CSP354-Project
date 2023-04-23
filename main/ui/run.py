@@ -10,7 +10,7 @@ from .ui_display import Display
 from .ui_main import Ui_MainWindow
 from .ui_mock_gpio import BoardWindow
 from .ui_motor import Motor
-from .ui_worker_manager import Ui_WorkerManager
+from .ui_worker_manager import WorkerManager
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     """
@@ -32,6 +32,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.setupDisplaySubWindow("Left Display")
         self.setupBoardSubWindow()
         self.setupMotorSubWindow()
+        self.setupWorkerManagerSubWindow()
 
     def setupButtonSubWindow(self):
         """
@@ -97,4 +98,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         motorSubWindow.setFixedWidth(motor.width() + 10)
         motorSubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
         self.mdiArea.addSubWindow(motorSubWindow)
+
+    def setupWorkerManagerSubWindow(self):
+        """
+        Setup the worker manager subwindow
+        """
+        workerManager = WorkerManager()
+        workerManagerSubWindow = QtWidgets.QMdiSubWindow()
+        workerManagerSubWindow.setWidget(workerManager)
+        workerManagerSubWindow.setWindowTitle("Worker Manager")
+        workerManagerSubWindow.setFixedHeight(workerManager.height() + 30)
+        workerManagerSubWindow.setFixedWidth(workerManager.width() + 10)
+        workerManagerSubWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint | QtCore.Qt.WindowTitleHint)
+        self.mdiArea.addSubWindow(workerManagerSubWindow)
 
