@@ -38,34 +38,3 @@ class Ui_Debug(object):
         __sortingEnabled = self.debugList.isSortingEnabled()
         self.debugList.setSortingEnabled(False)
         self.debugList.setSortingEnabled(__sortingEnabled)
-
-class Debug(QtWidgets.QWidget, Ui_Debug):
-
-    class DebugHandler(Handler):
-        def __init__(self, debugWidget):
-            super().__init__()
-            self.debugWidget = debugWidget
-
-        def emit(self, record):
-            self.debugWidget.addDebug(record.getMessage())
-    """
-    Debug widget
-    """
-    def __init__(self, name, parent=None):
-        super().__init__(parent)
-        self.setupUi(self)
-        self.name = name
-        self.groupBox.setTitle(name)
-
-        # anytime a log message is posted, add it to the debug list
-        self.debugHandler = Debug.DebugHandler(self)
-        LOGGER.addHandler(self.debugHandler)
-
-    def emit(self, record):
-        self.addDebug(record.getMessage())
-
-    def addDebug(self, text):
-        item = QtWidgets.QListWidgetItem()
-        item.setText(text)
-        self.debugList.addItem(text)
-        self.debugList.scrollToBottom()

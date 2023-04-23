@@ -38,20 +38,3 @@ class Ui_Motor(object):
         _translate = QtCore.QCoreApplication.translate
         Motor.setWindowTitle(_translate("Motor", "Motor"))
         self.groupBox.setTitle(_translate("Motor", "Motor Name"))
-
-class Motor(QtWidgets.QWidget, Ui_Motor):
-    """
-    Motor widget
-    """
-    def __init__(self, name, parent=None):
-        super(Motor, self).__init__(parent)
-        self.setupUi(self)
-        self.name = name
-        self.groupBox.setTitle(name)
-        self.motorDial.valueChanged.connect(self.value_changed)
-
-    def value_changed(self, value):
-        """
-        Value changed
-        """
-        LOGGER.debug("Motor %s value changed to %s", self.name, value)

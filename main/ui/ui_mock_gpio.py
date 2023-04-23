@@ -508,11 +508,3 @@ class Ui_Board(object):
         self.label_38.setText(_translate("Board", "GPIO 20"))
         self.label_39.setText(_translate("Board", "GND"))
         self.label_40.setText(_translate("Board", "GPIO 21"))
-
-class BoardWindow(QtWidgets.QWidget, Ui_Board):
-    """
-    GPIO Board Widget
-    """
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setupUi(self)

@@ -41,19 +41,3 @@ class Ui_Display(object):
         _translate = QtCore.QCoreApplication.translate
         Display.setWindowTitle(_translate("Display", "Display"))
         self.groupBox.setTitle(_translate("Display", "Display Name"))
-
-class Display(QtWidgets.QWidget, Ui_Display):
-    """
-    Display widget
-    """
-    def __init__(self, name, parent=None):
-        super().__init__(parent)
-        self.setupUi(self)
-        self.name = name
-        self.groupBox.setTitle(name)
-
-    def set_image(self, image):
-        """
-        Set the image to display
-        """
-        self.image.setPixmap(QtGui.QPixmap(image))

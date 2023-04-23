@@ -47,22 +47,3 @@ class Ui_Button(object):
         _translate = QtCore.QCoreApplication.translate
         Button.setWindowTitle(_translate("Button", "Button"))
         self.groupBox.setTitle(_translate("Button", "Button Name"))
-
-class Button(QtWidgets.QWidget, Ui_Button):
-    """
-    Button widget
-    """
-    def __init__(self, name, pin, parent=None):
-        super().__init__(parent)
-        self.setupUi(self)
-        self.name = name
-        self.pin = pin
-        self.groupBox.setTitle(name)
-        self.pushButton.setCheckable(True)
-        self.pushButton.toggled.connect(self.button_toggled)
-
-    def button_toggled(self, state):
-        """
-        Called when the button is toggled
-        """
-        LOGGER.debug("Button %s toggled to %s", self.name, state)

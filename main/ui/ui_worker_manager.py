@@ -68,8 +68,3 @@ class Ui_WorkerManager(object):
         item = self.workerTable.item(0, 1)
         item.setText(_translate("WorkerManager", "Activity"))
         self.workerTable.setSortingEnabled(__sortingEnabled)
-
-class WorkerManager(QtWidgets.QWidget, Ui_WorkerManager):
-    def __init__(self, parent=None):
-        super(WorkerManager, self).__init__(parent)
-        self.setupUi(self)

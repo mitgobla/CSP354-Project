@@ -4,13 +4,8 @@ Author: Benjamin Dodd (1901386)
 """
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from .ui_button import Button
-from .ui_debug import Debug
-from .ui_display import Display
 from .ui_main import Ui_MainWindow
-from .ui_mock_gpio import BoardWindow
-from .ui_motor import Motor
-from .ui_worker_manager import WorkerManager
+from .widgets import Button, Debug, Display, BoardWindow, Motor, WorkerManager
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     """
