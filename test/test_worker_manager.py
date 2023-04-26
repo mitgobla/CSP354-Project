@@ -2,9 +2,11 @@ import time
 import unittest
 
 from main.threading.worker_thread import WorkerThread
-from main.threading.worker_manager import WORKER_MANAGER
+from main.threading.worker_manager import WorkerManager
 
 class TestWorkerManager(unittest.TestCase):
+
+    worker_manager = WorkerManager()
 
     class TestThread(WorkerThread):
         def __init__(self, *args, **kwargs):
@@ -19,7 +21,7 @@ class TestWorkerManager(unittest.TestCase):
     def test_all_stopped(self):
         threads = [TestWorkerManager.TestThread() for _ in range(5)]
         for thread in threads:
-            WORKER_MANAGER.add_worker(thread)
+            self.worker_manager.add_worker(thread)
         time.sleep(5)
-        WORKER_MANAGER.stop_all_workers()
-        self.assertTrue(WORKER_MANAGER.is_stopped())
+        self.worker_manager.stop_all_workers()
+        self.assertTrue(self.worker_manager.is_stopped())
