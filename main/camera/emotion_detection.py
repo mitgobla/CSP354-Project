@@ -117,8 +117,9 @@ class EmotionDetectionWorker(WorkerThread):
 if __name__ == "__main__":
     from .video_feed import VideoFeed
 
+    WORKER_MANAGER = WorkerManager()
     VIDEO_FEED = VideoFeed()
-    EMOTION_DETECTION = EmotionDetection()
+    EMOTION_DETECTION = EmotionDetection(WORKER_MANAGER)
 
     while True:
         video_frame = VIDEO_FEED.capture()
@@ -128,5 +129,5 @@ if __name__ == "__main__":
             cv.putText(video_frame.image, EMOTION_DETECTION.current_emotion, (10, 30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             cv.imshow('Video', video_frame.image)
         if cv.waitKey(1) & 0xFF == ord('q'):
-            EMOTION_DETECTION.worker_manager.stop_all_workers()
+            WORKER_MANAGER.stop_all_workers()
             break

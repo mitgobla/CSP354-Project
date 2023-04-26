@@ -138,8 +138,9 @@ class GestureDetectionWorker(WorkerThread):
 if __name__ == "__main__":
     from .video_feed import VideoFeed
 
+    WORKER_MANAGER = WorkerManager()
     VIDEO_FEED = VideoFeed()
-    GESTURE_DETECTION = GestureDetection()
+    GESTURE_DETECTION = GestureDetection(WORKER_MANAGER)
 
     while True:
         video_frame = VIDEO_FEED.capture()
@@ -148,5 +149,5 @@ if __name__ == "__main__":
             cv.putText(video_frame.image, str(GESTURE_DETECTION.finger_count), (10, 30), cv.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv.LINE_AA)
             cv.imshow("Gesture Detection", video_frame.image)
         if cv.waitKey(1) & 0xFF == ord('q'):
-            GESTURE_DETECTION.worker_manager.stop_all_workers()
+            WORKER_MANAGER.stop_all_workers()
             break

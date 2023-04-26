@@ -1,5 +1,9 @@
 """
 Driver class for a button.
+
+Portions of this code were produced from the examples in the LABISTS Starter Kit User Manual:
+LABISTS, “Raspberry Pi Starter Kit Tutorial,” [Online]. Available: https://labists.com/pages/starter-kit-tutorial. [Accessed 12 February 2023].
+
 Author: Benjamin Dodd (1901386)
 """
 import time

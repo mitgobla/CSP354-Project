@@ -22,6 +22,9 @@ from ..threading.worker_thread import WorkerThread
 class Display(object):
     """
     Circular Display Driver
+
+    Portions of this code were produced based on a forums post by user 'MeckerZiege' on the Pimonori forums:
+    MeckerZiege, “Pimoroni Forums,” March 2021. [Online]. Available: https://forums.pimoroni.com/t/two-1-3-spi-colour-lcd-240x240-on-one-pi/16737/7. [Accessed 12 February 2023].
     """
 
     def __init__(self, worker_manager: WorkerManager, diameter: int, rotation: int, port: int, cs_pin: int, dc_pin: int, backlight: int):
