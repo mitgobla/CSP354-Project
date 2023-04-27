@@ -25,6 +25,7 @@ class EmotionDetection:
     _lock = threading.Lock()
     _image = None
     _dominant_emotion = None
+    _face_position = None
 
     _instance = None
     _instance_lock = threading.Lock()
@@ -81,6 +82,22 @@ class EmotionDetection:
         with self._lock:
             self._dominant_emotion = emotion
 
+    @property
+    def face_position(self):
+        """
+        Get the position of the face.
+        """
+        with self._lock:
+            return self._face_position
+
+    @face_position.setter
+    def face_position(self, position: tuple):
+        """
+        Set the position of the face.
+        """
+        with self._lock:
+            self._face_position = position
+
 class EmotionDetectionWorker(WorkerThread):
     """
     Worker thread for the emotion detection.
@@ -108,7 +125,9 @@ class EmotionDetectionWorker(WorkerThread):
         try:
             self._running = True
             dominant_emotion, _ = DETECTOR.top_emotion(self.emotion_detection.image)
+            face_position = DETECTOR.find_faces(self.emotion_detection.image)[0]
             self.emotion_detection.current_emotion = dominant_emotion
+            self.emotion_detection.face_position = face_position
         except cv.error:
             self._running = False
             return

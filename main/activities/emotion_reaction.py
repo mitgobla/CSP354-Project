@@ -13,7 +13,8 @@ from .activity import Activity
 from ..threading.worker_manager import WorkerManager
 from ..display.circular_display import LeftDisplay, RightDisplay
 from ..camera.emotion_detection import EmotionDetection
-from ..camera.video_feed import VideoFeed
+from ..camera.video_feed import VideoFeed, CAMERA_WIDTH
+from ..motor.stepper_motor import StepperMotor
 
 IMAGE_PATH = path.join("res", "emotion")
 
@@ -32,7 +33,7 @@ class EmotionReactionActivity(Activity):
     Class for displaying emotions on the circular display based on the current detected emotion.
     """
 
-    def __init__(self, worker_manager: WorkerManager, left_display: LeftDisplay, right_display: RightDisplay, emotion_detection: EmotionDetection, video_feed: VideoFeed):
+    def __init__(self, worker_manager: WorkerManager, left_display: LeftDisplay, right_display: RightDisplay, emotion_detection: EmotionDetection, video_feed: VideoFeed, stepper_motor: StepperMotor):
         super().__init__("EmotionReaction", worker_manager)
         self.left_display = left_display
         self.right_display = right_display
@@ -40,6 +41,7 @@ class EmotionReactionActivity(Activity):
         self.video_feed = video_feed
         self.left_display.image = IMAGES["neutral"]
         self.right_display.image = IMAGES["neutral"]
+        self.stepper_motor = stepper_motor
 
     def work(self):
         while self.running:
@@ -52,4 +54,17 @@ class EmotionReactionActivity(Activity):
             else:
                 self.left_display.image = IMAGES["neutral"]
                 self.right_display.image = IMAGES["neutral"]
+            face_position = self.emotion_detection.face_position
+            if face_position is not None:
+                face_center = face_position[0] + (face_position[2] / 2)
+                if face_center < (CAMERA_WIDTH / 2):
+                    # 45 max turn left
+                    # percentage of how far left the face is
+                    percentage = (face_center / (CAMERA_WIDTH / 2)) * 45
+                    self.stepper_motor.rotate_to(percentage)
+                else:
+                    # 45 max turn right
+                    # percentage of how far right the face is
+                    percentage = ((face_center - (CAMERA_WIDTH / 2)) / (CAMERA_WIDTH / 2)) * 45
+                    self.stepper_motor.rotate_to(-percentage)
             time.sleep(0.15)

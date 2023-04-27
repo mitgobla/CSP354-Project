@@ -45,6 +45,7 @@ class StepperMotor:
         self.worker_manager = worker_manager
         self.worker = None
         self.setup()
+        self.rotate_to(0)
 
     def setup(self):
         """
@@ -56,6 +57,25 @@ class StepperMotor:
         GPIO.setup(self.in2, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(self.in3, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(self.in4, GPIO.OUT, initial=GPIO.LOW)
+
+    def rotate_to(self, degrees: int):
+        """Rotate the stepper motor to a specific angle.
+
+        Args:
+            degrees (int): Angle to rotate to.
+        """
+        if self.worker is not None:
+            self.worker.stop()
+
+        steps = int((degrees / 360) * 512)
+        if steps < 0:
+            steps = abs(steps)
+            direction = StepperMotorDirection.TURN_ANTICLOCKWISE
+        else:
+            direction = StepperMotorDirection.TURN_CLOCKWISE
+        self.worker = StepperMotorWorker(self, direction, steps)
+        self.worker_manager.add_worker(self.worker)
+        LOGGER.debug("Stepper motor rotated to %d degrees", degrees)
 
     def step_clockwise(self, steps: int = 1):
         """Step the stepper motor clockwise.
