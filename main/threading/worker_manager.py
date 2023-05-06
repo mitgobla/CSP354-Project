@@ -11,6 +11,7 @@ from threading import Lock
 from main.threading import LOGGER
 
 from main.threading.worker_thread import WorkerThread
+from main.threading.watcher import WorkerManagerWatcher
 
 class WorkerManager:
     """
@@ -20,20 +21,6 @@ class WorkerManager:
     _instance = None
     _instance_lock = Lock()
     _intitialized = False
-
-    class WorkerManagerWatcher(WorkerThread):
-        """
-        Worker thread that watches the worker threads.
-        """
-
-        def __init__(self, manager: "WorkerManager"):
-            super().__init__()
-            self.manager = manager
-
-        def work(self):
-            while not self.is_stopped():
-                LOGGER.debug("WorkerManager: thread count: %s", len(self.manager))
-                time.sleep(3)
 
     def __new__(cls, debug: bool = False):
         if cls._instance is None:
