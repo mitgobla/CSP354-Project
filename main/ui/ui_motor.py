@@ -10,7 +10,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from . import LOGGER
+from main.ui import LOGGER
 
 class Ui_Motor(object):
     def setupUi(self, Motor):

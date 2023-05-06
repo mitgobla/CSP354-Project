@@ -7,7 +7,7 @@ import json
 from os import path, makedirs
 from threading import Lock
 
-from . import LOGGER
+from main.util import LOGGER
 
 STORE_PATH = path.join("data", "variable_store.json")
 

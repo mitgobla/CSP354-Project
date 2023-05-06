@@ -5,7 +5,7 @@ Author: Benjamin Dodd (1901386)
 
 from threading import Lock
 
-from .variable_store import VariableStore
+from main.util.variable_store import VariableStore
 
 class StorableType(object):
 

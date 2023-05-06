@@ -11,7 +11,7 @@
 from logging import Handler
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from . import LOGGER
+from main.ui import LOGGER
 
 class Ui_Debug(object):
     def setupUi(self, Debug):

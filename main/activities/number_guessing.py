@@ -6,12 +6,12 @@ Author: Benjamin Dodd (1901386)
 import time
 from random import randint
 
-from .activity import Activity
+from main.activities.activity import Activity
 
-from ..threading.worker_manager import WorkerManager
-from ..display.circular_display import LeftDisplay, RightDisplay
-from ..camera.gesture_detection import GestureDetection
-from ..camera.video_feed import VideoFeed
+from main.threading.worker_manager import WorkerManager
+from main.display.circular_display import LeftDisplay, RightDisplay
+from main.camera.gesture_detection import GestureDetection
+from main.camera.video_feed import VideoFeed
 
 class NumberGuessingActivity(Activity):
     """

@@ -11,7 +11,7 @@
 import os
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from . import LOGGER, RESOURCE_PATH
+from main.ui import LOGGER, RESOURCE_PATH
 
 class Ui_Button(object):
     def setupUi(self, Button):

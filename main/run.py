@@ -6,23 +6,23 @@ Author: Benjamin Dodd (1901386)
 import sys
 from PyQt5.QtWidgets import QApplication
 
-from . import LOGGER, IS_RASPBERRY_PI
+from main import LOGGER, IS_RASPBERRY_PI
 
-from .button.button import Button
-from .motor.stepper_motor import StepperMotor
-from .display.circular_display import LeftDisplay, RightDisplay
-from .camera.video_feed import VideoFeed
-from .camera.gesture_detection import GestureDetection
-from .camera.emotion_detection import EmotionDetection
+from main.button.button import Button
+from main.motor.stepper_motor import StepperMotor
+from main.display.circular_display import LeftDisplay, RightDisplay
+from main.camera.video_feed import VideoFeed
+from main.camera.gesture_detection import GestureDetection
+from main.camera.emotion_detection import EmotionDetection
 
-from .activities.clock import ClockActivity
-from .activities.emotion_reaction import EmotionReactionActivity
-from .activities.number_guessing import NumberGuessingActivity
-from .activities.activity_selector import ActivitySelector
+from main.activities.clock import ClockActivity
+from main.activities.emotion_reaction import EmotionReactionActivity
+from main.activities.number_guessing import NumberGuessingActivity
+from main.activities.activity_selector import ActivitySelector
 
-from .threading.worker_manager import WorkerManager
+from main.threading.worker_manager import WorkerManager
 
-from .ui.run import MainWindow
+from main.ui.run import MainWindow
 
 WORKER_MANAGER = WorkerManager()
 

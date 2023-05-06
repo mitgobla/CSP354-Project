@@ -5,7 +5,7 @@ Author: Benjamin Dodd (1901386)
 
 from random import choice
 
-from . import LOGGER
+from main.util import LOGGER
 
 class MockGPIO:
     """

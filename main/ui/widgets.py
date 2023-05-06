@@ -7,13 +7,13 @@ from logging import Handler
 from PyQt5.QtWidgets import QWidget, QListWidgetItem
 from PyQt5.QtGui import QPixmap
 
-from . import LOGGER
-from .ui_button import Ui_Button
-from .ui_debug import Ui_Debug
-from .ui_display import Ui_Display
-from .ui_mock_gpio import Ui_Board
-from .ui_motor import Ui_Motor
-from .ui_worker_manager import Ui_WorkerManager
+from main.ui import LOGGER
+from main.ui.ui_button import Ui_Button
+from main.ui.ui_debug import Ui_Debug
+from main.ui.ui_display import Ui_Display
+from main.ui.ui_mock_gpio import Ui_Board
+from main.ui.ui_motor import Ui_Motor
+from main.ui.ui_worker_manager import Ui_WorkerManager
 
 class Button(QWidget, Ui_Button):
     """

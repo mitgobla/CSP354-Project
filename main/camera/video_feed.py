@@ -6,7 +6,7 @@ Author: Benjamin Dodd (1901386)
 import threading
 import cv2 as cv
 
-from . import LOGGER
+from main.camera import LOGGER
 
 CAMERA_FPS = 15
 CAMERA_WIDTH = 480

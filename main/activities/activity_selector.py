@@ -6,15 +6,15 @@ Author: Benjamin Dodd (1901386)
 import time
 from typing import List
 
-from . import LOGGER
+from main.activities import LOGGER
 
-from .activity import Activity
+from main.activities.activity import Activity
 
-from ..display.circular_display import LeftDisplay, RightDisplay
-from ..button.button import Button
+from main.display.circular_display import LeftDisplay, RightDisplay
+from main.button.button import Button
 
-from ..threading.worker_manager import WorkerManager
-from ..threading.worker_thread import WorkerThread
+from main.threading.worker_manager import WorkerManager
+from main.threading.worker_thread import WorkerThread
 
 class StopActivity(WorkerThread):
     """

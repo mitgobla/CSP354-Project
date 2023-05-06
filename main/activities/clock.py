@@ -6,12 +6,12 @@ import time
 from enum import Enum
 from datetime import datetime
 
-from .activity import Activity
+from main.activities.activity import Activity
 
-from ..display.circular_display import LeftDisplay, RightDisplay
-from ..button.button import Button
+from main.display.circular_display import LeftDisplay, RightDisplay
+from main.button.button import Button
 
-from ..threading.worker_manager import WorkerManager
+from main.threading.worker_manager import WorkerManager
 
 class ClockMode(Enum):
     """

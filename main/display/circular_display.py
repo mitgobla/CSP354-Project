@@ -9,15 +9,15 @@ from PIL import Image
 import cv2 as cv
 import numpy as np
 
-from . import LOGGER
+from main.display import LOGGER
 
 try:
     import ST7789
 except ImportError:
-    from ..util import mock_st77789 as ST7789
+    from main.util import mock_st77789 as ST7789
 
-from ..threading.worker_manager import WorkerManager
-from ..threading.worker_thread import WorkerThread
+from main.threading.worker_manager import WorkerManager
+from main.threading.worker_thread import WorkerThread
 
 class Display(object):
     """

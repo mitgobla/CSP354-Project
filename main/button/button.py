@@ -9,12 +9,12 @@ Author: Benjamin Dodd (1901386)
 import time
 from threading import Lock
 
-from . import LOGGER
+from main.button import LOGGER
 
 try:
     import RPi.GPIO as GPIO
 except ImportError:
-    from ..util.mock_gpio import MockGPIO as GPIO
+    from main.util.mock_gpio import MockGPIO as GPIO
 
 class Button:
     """

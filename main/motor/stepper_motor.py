@@ -10,16 +10,16 @@ Author: Benjamin Dodd (1901386)
 import time
 from enum import Enum
 
-from . import LOGGER
+from main.motor import LOGGER
 
 try:
     import RPi.GPIO as GPIO
 except ImportError:
-    from ..util.mock_gpio import MockGPIO as GPIO
+    from main.util.mock_gpio import MockGPIO as GPIO
 
-from ..util.storable_type import StorableType
-from ..threading.worker_manager import WorkerManager
-from ..threading.worker_thread import WorkerThread
+from main.util.storable_type import StorableType
+from main.threading.worker_manager import WorkerManager
+from main.threading.worker_thread import WorkerThread
 
 CLOCKWISE = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
 

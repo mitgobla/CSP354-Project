@@ -3,10 +3,10 @@ Base class for all activities.
 Author: Benjamin Dodd (1901386)
 """
 
-from . import LOGGER
+from main.activities import LOGGER
 
-from ..threading.worker_manager import WorkerManager
-from ..threading.worker_thread import WorkerThread
+from main.threading.worker_manager import WorkerManager
+from main.threading.worker_thread import WorkerThread
 
 class Activity(WorkerThread):
     """

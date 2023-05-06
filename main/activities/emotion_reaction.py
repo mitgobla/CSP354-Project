@@ -8,13 +8,13 @@ from os import path
 import cv2 as cv
 
 
-from .activity import Activity
+from main.activities.activity import Activity
 
-from ..threading.worker_manager import WorkerManager
-from ..display.circular_display import LeftDisplay, RightDisplay
-from ..camera.emotion_detection import EmotionDetection
-from ..camera.video_feed import VideoFeed, CAMERA_WIDTH
-from ..motor.stepper_motor import StepperMotor
+from main.threading.worker_manager import WorkerManager
+from main.display.circular_display import LeftDisplay, RightDisplay
+from main.camera.emotion_detection import EmotionDetection
+from main.camera.video_feed import VideoFeed, CAMERA_WIDTH
+from main.motor.stepper_motor import StepperMotor
 
 IMAGE_PATH = path.join("res", "emotion")
 

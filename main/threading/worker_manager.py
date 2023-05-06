@@ -8,9 +8,9 @@ from typing import List
 from atexit import register
 from threading import Lock
 
-from . import LOGGER
+from main.threading import LOGGER
 
-from .worker_thread import WorkerThread
+from main.threading.worker_thread import WorkerThread
 
 class WorkerManager:
     """

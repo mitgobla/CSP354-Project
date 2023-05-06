@@ -8,12 +8,12 @@ import cv2 as cv
 
 from fer import FER
 
-from . import LOGGER
+from main.camera import LOGGER
 
-from .video_feed import VideoFrame
+from main.camera.video_feed import VideoFrame
 
-from ..threading.worker_manager import WorkerManager
-from ..threading.worker_thread import WorkerThread
+from main.threading.worker_manager import WorkerManager
+from main.threading.worker_thread import WorkerThread
 
 DETECTOR = FER()
 

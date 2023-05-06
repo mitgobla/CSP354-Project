@@ -11,7 +11,7 @@
 import os
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from . import RESOURCE_PATH
+from main.ui import RESOURCE_PATH
 
 class Ui_Display(object):
     def setupUi(self, Display):
