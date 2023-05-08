@@ -31,7 +31,7 @@ WORKER_MANAGER = WorkerManager()
 
 Worker.set_manager(WORKER_MANAGER)
 
-BUTTON = Button("main", 37)
+BUTTON = Button("main", 33)
 STEPPER_MOTOR = StepperMotor()
 
 LEFT_DISPLAY = LeftDisplay()
