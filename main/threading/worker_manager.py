@@ -49,8 +49,8 @@ class WorkerManager:
         """
         if worker in self.__workers:
             raise ValueError("Worker already added")
-        worker.manager = self
-        worker.start()
+        # worker.manager = self
+        # worker.start()
         self.__workers.append(worker)
         # LOGGER.debug("Worker added: %s", worker)
 

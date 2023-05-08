@@ -2,12 +2,18 @@ import time
 import unittest
 
 from main.threading.worker_thread import Worker
+from main.threading.worker_manager import WorkerManager
 
 class TestWorkerThread(unittest.TestCase):
 
+    worker_manager = WorkerManager()
+
+    def __init__(self, methodName: str = "runTest"):
+        super().__init__(methodName)
+        Worker.set_manager(self.worker_manager)
     class TestThread(Worker):
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
+        def __init__(self):
+            super().__init__()
             self.count = 0
 
         def work(self):
@@ -27,4 +33,4 @@ class TestWorkerThread(unittest.TestCase):
         thread.start()
         time.sleep(5)
         thread.stop()
-        self.assertTrue(thread.count == 10)
+        self.assertTrue(thread.count == 10, f"thread.count = {thread.count}")

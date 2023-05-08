@@ -8,9 +8,13 @@ class TestWorkerManager(unittest.TestCase):
 
     worker_manager = WorkerManager()
 
+    def __init__(self, methodName: str = "runTest"):
+        super().__init__(methodName)
+        Worker.set_manager(self.worker_manager)
+
     class TestThread(Worker):
-        def __init__(self, manager, *args, **kwargs):
-            super().__init__(manager, *args, **kwargs)
+        def __init__(self):
+            super().__init__()
             self.count = 0
 
         def work(self):
@@ -19,7 +23,7 @@ class TestWorkerManager(unittest.TestCase):
                 time.sleep(0.5)
 
     def test_all_stopped(self):
-        workers = [TestWorkerManager.TestThread(self.worker_manager) for _ in range(5)]
+        workers = [TestWorkerManager.TestThread() for _ in range(5)]
         for worker in workers:
             worker.start()
         time.sleep(5)
