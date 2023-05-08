@@ -19,7 +19,7 @@ except ImportError:
 
 from main.util.storable_type import StorableType
 from main.threading.worker_manager import WorkerManager
-from main.threading.worker_thread import WorkerThread
+from main.threading.worker_thread import Worker
 
 CLOCKWISE = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
 
@@ -33,7 +33,7 @@ class StepperMotor:
     Driver class for stepper motors.
     """
 
-    def __init__(self, worker_manager: WorkerManager, in1: int = 11, in2: int = 13, in3: int = 15, in4: int = 16, speed: float = 0.0005):
+    def __init__(self, in1: int = 11, in2: int = 13, in3: int = 15, in4: int = 16, speed: float = 0.0005):
         """Create a new instance of the StepperMotor class."""
         self.in1 = in1
         self.in2 = in2
@@ -42,7 +42,6 @@ class StepperMotor:
         self.speed = speed if speed >= 0.0005 else 0.0005
         self.steps = StorableType("stepper_motor_steps", 0)
 
-        self.worker_manager = worker_manager
         self.worker = None
         self.setup()
         self.rotate_to(0)
@@ -74,7 +73,7 @@ class StepperMotor:
         else:
             direction = StepperMotorDirection.TURN_CLOCKWISE
         self.worker = StepperMotorWorker(self, direction, steps)
-        self.worker_manager.add_worker(self.worker)
+        self.worker.start()
         LOGGER.debug("Stepper motor rotated to %d degrees", degrees)
 
     def step_clockwise(self, steps: int = 1):
@@ -87,7 +86,7 @@ class StepperMotor:
             self.worker.stop()
 
         self.worker = StepperMotorWorker(self, StepperMotorDirection.TURN_CLOCKWISE, steps)
-        self.worker_manager.add_worker(self.worker)
+        self.worker.start()
         LOGGER.debug("Stepper motor stepped clockwise %d steps", steps)
 
     def step_anticlockwise(self, steps: int = 1):
@@ -100,10 +99,10 @@ class StepperMotor:
             self.worker.stop()
 
         self.worker = StepperMotorWorker(self, StepperMotorDirection.TURN_ANTICLOCKWISE, steps)
-        self.worker_manager.add_worker(self.worker)
+        self.worker.start()
         LOGGER.debug("Stepper motor stepped anticlockwise %d steps", steps)
 
-class StepperMotorWorker(WorkerThread):
+class StepperMotorWorker(Worker):
     """
     Worker thread for the stepper motor.
     """
@@ -163,9 +162,11 @@ class StepperMotorWorker(WorkerThread):
 
 
 if __name__ == "__main__":
+    WORKER_MANAGER = WorkerManager()
+
     STEPPER_MOTOR = StepperMotor(11, 13, 15, 16)
     STEPPER_MOTOR.step_clockwise(10)
     time.sleep(3)
     STEPPER_MOTOR.step_anticlockwise(10)
     time.sleep(3)
-    STEPPER_MOTOR.worker_manager.stop_all_workers()
+    WORKER_MANAGER.stop_all_workers()

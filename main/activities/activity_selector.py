@@ -14,24 +14,23 @@ from main.display.circular_display import LeftDisplay, RightDisplay
 from main.button.button import Button
 
 from main.threading.worker_manager import WorkerManager
-from main.threading.worker_thread import WorkerThread
+from main.threading.worker_thread import Worker
 
-class StopActivity(WorkerThread):
+class StopActivity(Worker):
     """
     Worker that will stop the current activity if the button is pressed for 8 seconds.
     """
 
     def __init__(self, activity: Activity, button: Button):
         super().__init__()
-        self.running = True
         self.activity = activity
         self.button = button
 
     def work(self):
-        while self.running:
+        while not self.is_stopped():
             if self.button.has_been_pressed_for(8):
                 self.activity.stop()
-                self.running = False
+                self.stop()
             time.sleep(0.1)
 
 class ActivitySelector(Activity):

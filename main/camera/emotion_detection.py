@@ -13,7 +13,7 @@ from main.camera import LOGGER
 from main.camera.video_feed import VideoFrame
 
 from main.threading.worker_manager import WorkerManager
-from main.threading.worker_thread import WorkerThread
+from main.threading.worker_thread import Worker
 
 DETECTOR = FER()
 
@@ -31,16 +31,15 @@ class EmotionDetection:
     _instance_lock = threading.Lock()
     _intitialized = False
 
-    def __new__(cls, worker_manager: WorkerManager):
+    def __new__(cls):
         if cls._instance is None:
             with cls._instance_lock:
                 if cls._instance is None:
                     cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, worker_manager: WorkerManager):
+    def __init__(self):
         if not self._intitialized:
-            self.worker_manager = worker_manager
             self.worker = None
             self._intitialized = True
 
@@ -64,7 +63,7 @@ class EmotionDetection:
 
             self._image = frame.image
             self.worker = EmotionDetectionWorker(self)
-            self.worker_manager.add_worker(self.worker)
+            self.worker.start()
 
     @property
     def current_emotion(self):
@@ -98,7 +97,7 @@ class EmotionDetection:
         with self._lock:
             self._face_position = position
 
-class EmotionDetectionWorker(WorkerThread):
+class EmotionDetectionWorker(Worker):
     """
     Worker thread for the emotion detection.
     """

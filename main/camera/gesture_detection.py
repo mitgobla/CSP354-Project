@@ -13,7 +13,7 @@ from main.camera import LOGGER
 from main.camera.video_feed import VideoFrame
 
 from main.threading.worker_manager import WorkerManager
-from main.threading.worker_thread import WorkerThread
+from main.threading.worker_thread import Worker
 
 
 MP_DRAWING = mp.solutions.drawing_utils
@@ -33,16 +33,15 @@ class GestureDetection:
     _instance_lock = threading.Lock()
     _intitialized = False
 
-    def __new__(cls, worker_manager: WorkerManager):
+    def __new__(cls):
         if cls._instance is None:
             with cls._instance_lock:
                 if cls._instance is None:
                     cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, worker_manager: WorkerManager):
+    def __init__(self):
         if not self._intitialized:
-            self.worker_manager = worker_manager
             self.worker = None
             self._intitialized = True
 
@@ -67,7 +66,7 @@ class GestureDetection:
 
             self._image = image.to_pillow()
             self.worker = GestureDetectionWorker(self)
-            self.worker_manager.add_worker(self.worker)
+            self.worker.start()
 
     @property
     def finger_count(self):
@@ -85,7 +84,7 @@ class GestureDetection:
         with self._lock:
             self._finger_count = finger_count
 
-class GestureDetectionWorker(WorkerThread):
+class GestureDetectionWorker(Worker):
     """
     Worker thread for the gesture detection.
     """

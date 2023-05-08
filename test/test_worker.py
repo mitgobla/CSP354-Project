@@ -1,11 +1,11 @@
 import time
 import unittest
 
-from main.threading.worker_thread import WorkerThread
+from main.threading.worker_thread import Worker
 
 class TestWorkerThread(unittest.TestCase):
 
-    class TestThread(WorkerThread):
+    class TestThread(Worker):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.count = 0

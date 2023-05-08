@@ -21,10 +21,13 @@ from main.activities.number_guessing import NumberGuessingActivity
 from main.activities.activity_selector import ActivitySelector
 
 from main.threading.worker_manager import WorkerManager
+from main.threading.worker_thread import Worker
 
 from main.ui.run import MainWindow
 
 WORKER_MANAGER = WorkerManager()
+
+Worker.set_manager(WORKER_MANAGER)
 
 BUTTON = Button("main", 37)
 STEPPER_MOTOR = StepperMotor(WORKER_MANAGER)

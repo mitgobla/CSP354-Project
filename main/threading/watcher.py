@@ -4,9 +4,9 @@ Author: Benjamin Dodd (1901386)
 """
 import time
 from main.threading import LOGGER
-from main.threading.worker_thread import WorkerThread
+from main.threading.worker_thread import Worker
 
-class WorkerManagerWatcher(WorkerThread):
+class WorkerManagerWatcher(Worker):
     """
     Worker thread that watches the worker threads.
     """

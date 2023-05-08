@@ -10,7 +10,7 @@ from threading import Lock
 
 from main.threading import LOGGER
 
-from main.threading.worker_thread import WorkerThread
+from main.threading.worker_thread import Worker
 from main.threading.watcher import WorkerManagerWatcher
 
 class WorkerManager:
@@ -31,19 +31,21 @@ class WorkerManager:
 
     def __init__(self, debug: bool = False):
         if not self._intitialized:
-            self.__workers: List[WorkerThread] = []
+            self.__workers: List[Worker] = []
             register(self.stop_all_workers)
             self.debug = debug
+
             if debug:
                 self.watcher = self.WorkerManagerWatcher(self)
                 self.watcher.start()
+
             self._intitialized = True
 
     def __len__(self):
         return len(self.__workers)
 
-    def add_worker(self, worker: WorkerThread):
-        """Adds a WorkerThread to the manager.
+    def add_worker(self, worker: Worker):
+        """Adds a Worker to the manager.
         """
         if worker in self.__workers:
             raise ValueError("Worker already added")
@@ -58,6 +60,8 @@ class WorkerManager:
         """
         for thread in self.__workers:
             thread.stop()
+            thread.join()
+
         if self.debug:
             self.watcher.stop()
         LOGGER.debug("All workers stopped")
@@ -73,16 +77,16 @@ class WorkerManager:
                 return False
         return True
 
-    def remove_worker(self, thread: WorkerThread):
+    def remove_worker(self, worker: Worker):
         """
         Removes a worker from the manager.
 
         Args:
-            thread (WorkerThread): Worker to delete.
+            thread (Worker): Worker to delete.
         """
         # LOGGER.debug("Removing worker: %s", thread)
-        if thread in self.__workers:
-            if not thread.is_stopped():
-                thread.stop()
-            self.__workers.remove(thread)
+        if worker in self.__workers:
+            if not worker.is_stopped():
+                worker.stop()
+            self.__workers.remove(worker)
             # LOGGER.debug("Worker removed: %s", thread)

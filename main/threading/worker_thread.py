@@ -7,15 +7,26 @@ import threading
 
 from main.threading import LOGGER
 
-class WorkerThread(threading.Thread):
+class Worker(threading.Thread):
     """
-    A custom Thread implementation that can be stopped and restarted.
+    A custom Thread implementation that can be stopped.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.manager = None
+    __manager = None
+
+    def __init__(self):
+        super().__init__()
         self.__stopped_event = threading.Event()
+
+    @classmethod
+    def set_manager(cls, manager):
+        """
+        Sets the WorkerManager instance.
+
+        Args:
+            manager (WorkerManager): The WorkerManager instance.
+        """
+        cls.__manager = manager
 
     def stop(self):
         """
@@ -36,13 +47,16 @@ class WorkerThread(threading.Thread):
         """
         Runs the thread.
         """
+        self.__manager.add_worker(self)
         self.__stopped_event.clear()
         self.work()
-        self.manager.remove_worker(self)
+        self.__manager.remove_worker(self)
 
     def work(self):
         """
         Override this method to do work in the thread.
+
+        Use `self.is_stopped()` to check if the thread has been stopped.`
         """
         return
 
@@ -50,7 +64,7 @@ class WorkerThread(threading.Thread):
 if __name__ == "__main__":
     import time
 
-    class MyThread(WorkerThread):
+    class MyThread(Worker):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
             self.count = 0

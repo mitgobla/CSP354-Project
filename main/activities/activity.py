@@ -6,9 +6,9 @@ Author: Benjamin Dodd (1901386)
 from main.activities import LOGGER
 
 from main.threading.worker_manager import WorkerManager
-from main.threading.worker_thread import WorkerThread
+from main.threading.worker_thread import Worker
 
-class Activity(WorkerThread):
+class Activity(Worker):
     """
     Base class for all activities.
     """

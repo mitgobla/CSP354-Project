@@ -17,7 +17,7 @@ except ImportError:
     from main.util import mock_st77789 as ST7789
 
 from main.threading.worker_manager import WorkerManager
-from main.threading.worker_thread import WorkerThread
+from main.threading.worker_thread import Worker
 
 class Display(object):
     """
@@ -27,7 +27,7 @@ class Display(object):
     MeckerZiege, “Pimoroni Forums,” March 2021. [Online]. Available: https://forums.pimoroni.com/t/two-1-3-spi-colour-lcd-240x240-on-one-pi/16737/7. [Accessed 12 February 2023].
     """
 
-    def __init__(self, worker_manager: WorkerManager, diameter: int, rotation: int, port: int, cs_pin: int, dc_pin: int, backlight: int):
+    def __init__(self, diameter: int, rotation: int, port: int, cs_pin: int, dc_pin: int, backlight: int):
         self.diameter = diameter
         self.rotation = rotation
         self.port = port
@@ -50,7 +50,6 @@ class Display(object):
             offset_top=self.offset_top
         )
 
-        self.worker_manager = worker_manager
         self.worker = None
 
         self._lock = threading.Lock()
@@ -80,7 +79,7 @@ class Display(object):
                 if self.worker.is_running():
                     return
             self.worker = DisplayWorker(self)
-            self.worker_manager.add_worker(self.worker)
+            self.worker.start()
 
     def display_number(self, number: int, colour: tuple = (255, 255, 255)):
         """Displays a number on the display.
@@ -117,7 +116,7 @@ class Display(object):
         blank = cv.cvtColor(np.asarray(blank), cv.COLOR_RGB2BGR)
         self.image = blank
 
-class DisplayWorker(WorkerThread):
+class DisplayWorker(Worker):
 
     def __init__(self, display: Display):
         super().__init__()
@@ -144,16 +143,16 @@ class LeftDisplay(Display):
     _instance_lock = threading.Lock()
     _initialized = False
 
-    def __new__(cls, worker_manager: WorkerManager):
+    def __new__(cls):
         if cls._instance is None:
             with cls._instance_lock:
                 if cls._instance is None:
                     cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, worker_manager: WorkerManager):
+    def __init__(self):
         if not self._initialized:
-            super().__init__(worker_manager, diameter=240, rotation=90, port=0, cs_pin=1, dc_pin=9, backlight=19)
+            super().__init__(diameter=240, rotation=90, port=0, cs_pin=1, dc_pin=9, backlight=19)
             LOGGER.debug("Left Display created")
 
 class RightDisplay(Display):
@@ -164,16 +163,16 @@ class RightDisplay(Display):
     _instance_lock = threading.Lock()
     _initialized = False
 
-    def __new__(cls, worker_manager: WorkerManager):
+    def __new__(cls):
         if cls._instance is None:
             with cls._instance_lock:
                 if cls._instance is None:
                     cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, worker_manager: WorkerManager):
+    def __init__(self):
         if not self._initialized:
-            super().__init__(worker_manager, diameter=240, rotation=90, port=0, cs_pin=0, dc_pin=9, backlight=18)
+            super().__init__(diameter=240, rotation=90, port=0, cs_pin=0, dc_pin=9, backlight=18)
             LOGGER.debug("Right Display created")
 
 
@@ -182,8 +181,8 @@ if __name__ == '__main__':
 
     WORKER_MANAGER = WorkerManager()
 
-    RIGHT_DISPLAY = RightDisplay(WORKER_MANAGER)
-    LEFT_DISPLAY = LeftDisplay(WORKER_MANAGER)
+    RIGHT_DISPLAY = RightDisplay()
+    LEFT_DISPLAY = LeftDisplay()
     VIDEO_FEED = VideoFeed()
 
     while True:
