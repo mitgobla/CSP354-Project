@@ -6,7 +6,7 @@ Author: Benjamin Dodd (1901386)
 import sys
 from PyQt5.QtWidgets import QApplication
 
-from main import LOGGER, IS_RASPBERRY_PI
+from main import LOGGER, IS_RASPBERRY_PI, ARGS
 
 from main.button.button import Button
 from main.motor.stepper_motor import StepperMotor
@@ -25,36 +25,39 @@ from main.threading.worker_thread import Worker
 
 from main.ui.run import MainWindow
 
+
+
 WORKER_MANAGER = WorkerManager()
 
 Worker.set_manager(WORKER_MANAGER)
 
 BUTTON = Button("main", 37)
-STEPPER_MOTOR = StepperMotor(WORKER_MANAGER)
+STEPPER_MOTOR = StepperMotor()
 
-LEFT_DISPLAY = LeftDisplay(WORKER_MANAGER)
-RIGHT_DISPLAY = RightDisplay(WORKER_MANAGER)
+LEFT_DISPLAY = LeftDisplay()
+RIGHT_DISPLAY = RightDisplay()
 
 VIDEO_FEED = VideoFeed()
-GESTURE_DETECTION = GestureDetection(WORKER_MANAGER)
-EMOTION_DETECTION = EmotionDetection(WORKER_MANAGER)
+GESTURE_DETECTION = GestureDetection()
+EMOTION_DETECTION = EmotionDetection()
 
-CLOCK_ACTIVITY = ClockActivity(WORKER_MANAGER, LEFT_DISPLAY, RIGHT_DISPLAY, BUTTON)
-EMOTION_REACTION_ACTIVITY = EmotionReactionActivity(WORKER_MANAGER, LEFT_DISPLAY, RIGHT_DISPLAY, EMOTION_DETECTION, VIDEO_FEED)
-NUMBER_GUESSING_ACTIVITY = NumberGuessingActivity(WORKER_MANAGER, LEFT_DISPLAY, RIGHT_DISPLAY, VIDEO_FEED, GESTURE_DETECTION)
+CLOCK_ACTIVITY = ClockActivity(LEFT_DISPLAY, RIGHT_DISPLAY, BUTTON)
+EMOTION_REACTION_ACTIVITY = EmotionReactionActivity(LEFT_DISPLAY, RIGHT_DISPLAY, EMOTION_DETECTION, VIDEO_FEED, STEPPER_MOTOR)
+NUMBER_GUESSING_ACTIVITY = NumberGuessingActivity(LEFT_DISPLAY, RIGHT_DISPLAY, VIDEO_FEED, GESTURE_DETECTION)
 
 ACTIVITIES = [CLOCK_ACTIVITY, EMOTION_REACTION_ACTIVITY, NUMBER_GUESSING_ACTIVITY]
-ACTIVITY_SELECTOR = ActivitySelector(WORKER_MANAGER, ACTIVITIES, LEFT_DISPLAY, RIGHT_DISPLAY, BUTTON)
+ACTIVITY_SELECTOR = ActivitySelector(ACTIVITIES, LEFT_DISPLAY, RIGHT_DISPLAY, BUTTON)
 
 def raspberry_pi_main():
     """
     Main function to run the application
     """
-    LOGGER.info("Starting application")
+    LOGGER.info("Starting application on Raspberry Pi")
     ACTIVITY_SELECTOR.start()
-    LOGGER.info("Application started")
+    LOGGER.info("Application started on Raspberry Pi")
     ACTIVITY_SELECTOR.join()
     WORKER_MANAGER.stop_all_workers()
+    LOGGER.info("Application stopped on Raspberry Pi")
 
 APPLICATION = QApplication(sys.argv)
 WINDOW = MainWindow()
@@ -63,12 +66,12 @@ def emulator_main():
     """
     Main function to run the application in an emulator
     """
-    LOGGER.info("Starting application")
+    LOGGER.info("Starting application in emulator")
     WINDOW.show()
     sys.exit(APPLICATION.exec_())
 
 if __name__ == "__main__":
-    if IS_RASPBERRY_PI:
+    if IS_RASPBERRY_PI or not ARGS.emulate:
         raspberry_pi_main()
     else:
         emulator_main()

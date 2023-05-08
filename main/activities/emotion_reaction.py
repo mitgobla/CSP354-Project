@@ -33,8 +33,8 @@ class EmotionReactionActivity(Activity):
     Class for displaying emotions on the circular display based on the current detected emotion.
     """
 
-    def __init__(self, worker_manager: WorkerManager, left_display: LeftDisplay, right_display: RightDisplay, emotion_detection: EmotionDetection, video_feed: VideoFeed, stepper_motor: StepperMotor):
-        super().__init__("EmotionReaction", worker_manager)
+    def __init__(self, left_display: LeftDisplay, right_display: RightDisplay, emotion_detection: EmotionDetection, video_feed: VideoFeed, stepper_motor: StepperMotor):
+        super().__init__("EmotionReaction")
         self.left_display = left_display
         self.right_display = right_display
         self.emotion_detection = emotion_detection
@@ -44,7 +44,7 @@ class EmotionReactionActivity(Activity):
         self.stepper_motor = stepper_motor
 
     def work(self):
-        while self.running:
+        while not self.is_stopped():
             capture = self.video_feed.capture()
             self.emotion_detection.image = capture
             emotion = self.emotion_detection.current_emotion

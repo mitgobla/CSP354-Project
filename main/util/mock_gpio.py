@@ -58,7 +58,8 @@ class MockGPIO:
             pin (int): The pin number.
             value (str): The state to set the pin to. Must be either MockGPIO.LOW or MockGPIO.HIGH.
         """
-        LOGGER.debug("MockGPIO.output(%s, %s)", pin, value)
+        pass
+        # LOGGER.debug("MockGPIO.output(%s, %s)", pin, value)
 
     @classmethod
     def input(cls, pin: int) -> str:

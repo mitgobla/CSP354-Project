@@ -18,8 +18,8 @@ class NumberGuessingActivity(Activity):
     Number guessing game where the user has to gesture with their fingers to guess the number.
     """
 
-    def __init__(self, worker_manager: WorkerManager, left_display: LeftDisplay, right_display: RightDisplay, video_feed: VideoFeed, gesture_detection: GestureDetection):
-        super().__init__("NumberGuessing", worker_manager)
+    def __init__(self, left_display: LeftDisplay, right_display: RightDisplay, video_feed: VideoFeed, gesture_detection: GestureDetection):
+        super().__init__("NumberGuessing")
         self.left_display = left_display
         self.right_display = right_display
         self.video_feed = video_feed
@@ -28,7 +28,7 @@ class NumberGuessingActivity(Activity):
         self.random_number = randint(1, 8)
 
     def work(self):
-        while self.running:
+        while not self.is_stopped():
             capture = self.video_feed.capture()
             self.gesture_detection.image = capture
             finger_count = self.gesture_detection.finger_count

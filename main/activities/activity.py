@@ -12,28 +12,12 @@ class Activity(Worker):
     """
     Base class for all activities.
     """
-    def __init__(self, name: str, worker_manager: WorkerManager):
+    def __init__(self, name: str):
         super().__init__()
         self.name = name
-        self.running = False
-        self.worker_manager = worker_manager
-
 
     def __str__(self):
         return f"Activity({self.name})"
 
     def __repr__(self):
         return self.__str__()
-
-    def start(self):
-        """
-        Starts the activity.
-        """
-        self.running = True
-        self.worker_manager.add_worker(self)
-
-    def stop(self):
-        """
-        Stops the activity.
-        """
-        self.running = False

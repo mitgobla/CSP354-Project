@@ -194,5 +194,5 @@ if __name__ == '__main__':
             cv.imshow("Right Display", RIGHT_DISPLAY.image)
             cv.imshow("Left Display", LEFT_DISPLAY.image)
         if cv.waitKey(1) & 0xFF == ord('q'):
-            WORKER_MANAGER.worker_manager.stop_all_workers()
+            WORKER_MANAGER.stop_all_workers()
             break

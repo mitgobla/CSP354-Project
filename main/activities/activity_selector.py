@@ -27,10 +27,14 @@ class StopActivity(Worker):
         self.button = button
 
     def work(self):
+        LOGGER.debug("Starting stop-wait activity")
         while not self.is_stopped():
-            if self.button.has_been_pressed_for(8):
-                self.activity.stop()
-                self.stop()
+            if self.button.is_pressed():
+                self.button.wait_for_release()
+                if self.button.has_been_pressed_for(8):
+                    LOGGER.debug("Stopping activity %s", self.activity)
+                    self.activity.stop()
+                    self.stop()
             time.sleep(0.1)
 
 class ActivitySelector(Activity):
@@ -38,8 +42,8 @@ class ActivitySelector(Activity):
     Main activity that allows the user to select which activity to run.
     """
 
-    def __init__(self, worker_manager: WorkerManager, activities: List[Activity], left_display: LeftDisplay, right_display: RightDisplay, button: Button):
-        super().__init__("activity_selector", worker_manager)
+    def __init__(self, activities: List[Activity], left_display: LeftDisplay, right_display: RightDisplay, button: Button):
+        super().__init__("activity_selector")
         self.activities = activities
         self.left_display = left_display
         self.right_display = right_display
@@ -49,20 +53,22 @@ class ActivitySelector(Activity):
 
     def work(self):
         LOGGER.debug("Starting activity selector")
-        while self.running:
+        while not self.is_stopped():
             self.left_display.display_number(self.current_activity_index + 1)
             self.right_display.display_text(self.activities[self.current_activity_index].name)
 
-            if self.button.has_been_pressed_for(8):
-                LOGGER.debug("Stopping activity selector")
-                self.running = False
-            if self.button.has_been_pressed_for(3):
-                LOGGER.debug("Starting activity %s", self.activities[self.current_activity_index])
-                self.activities[self.current_activity_index].start()
-                self.worker_manager.add_worker(StopActivity(self.activities[self.current_activity_index], self.button))
-                self.activities[self.current_activity_index].join()
-            else:
-                if self.button.is_pressed():
+            if self.button.is_pressed():
+                self.button.wait_for_release()
+                if self.button.has_been_pressed_for(8):
+                    LOGGER.debug("Stopping activity selector")
+                    self.stop()
+                elif self.button.has_been_pressed_for(3):
+                    LOGGER.debug("Starting activity %s", self.activities[self.current_activity_index])
+                    self.activities[self.current_activity_index].start()
+                    stop_activity = StopActivity(self.activities[self.current_activity_index], self.button)
+                    stop_activity.start()
+                    self.activities[self.current_activity_index].join()
+                else:
                     self.current_activity_index = (self.current_activity_index + 1) % len(self.activities)
                     LOGGER.debug("Changing activity to %s", self.activities[self.current_activity_index])
 
