@@ -58,22 +58,22 @@ class WorkerManager:
         """
         Stops all workers.
         """
-        for thread in self.__workers:
-            thread.stop()
-            thread.join()
+        for worker in self.__workers:
+            if not worker.is_stopped():
+                worker.stop()
 
         if self.debug:
             self.watcher.stop()
         LOGGER.debug("All workers stopped")
 
     def is_stopped(self):
-        """Returns whether all threads are stopped.
+        """Returns whether all workers are stopped.
 
         Returns:
-            bool: True if all threads are stopped, False otherwise.
+            bool: True if all workers are stopped, False otherwise.
         """
-        for thread in self.__workers:
-            if not thread.is_stopped():
+        for worker in self.__workers:
+            if not worker.is_stopped():
                 return False
         return True
 
@@ -82,7 +82,7 @@ class WorkerManager:
         Removes a worker from the manager.
 
         Args:
-            thread (Worker): Worker to delete.
+            worker (Worker): Worker to delete.
         """
         # LOGGER.debug("Removing worker: %s", thread)
         if worker in self.__workers:
