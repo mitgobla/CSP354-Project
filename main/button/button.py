@@ -89,6 +89,14 @@ class Button:
         with self._lock:
             return self._state
 
+    @property
+    def start_press_time(self):
+        """
+        Get the time the button was pressed.
+        """
+        with self._lock:
+            return self._start_press_time
+
     def is_pressed(self):
         """
         Check if the button is pressed.
