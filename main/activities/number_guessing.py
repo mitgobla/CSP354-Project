@@ -36,10 +36,10 @@ class NumberGuessingActivity(Activity):
             colour = (0, 255, 0) if correct_guess else (0, 0, 255)
             if finger_count is not None:
                 self.left_display.display_number(finger_count, colour)
-                self.right_display.image = capture
+                self.right_display.image = capture.image
             else:
                 self.left_display.display_number(0, colour)
-                self.right_display.image = capture
+                self.right_display.image = capture.image
 
             if correct_guess:
                 self.random_number = randint(1, 8)
