@@ -7,4 +7,4 @@ git pull
 
 # Run python script
 
-python3.7 -m main.run
+libcamerify python3.7 -m main.run
