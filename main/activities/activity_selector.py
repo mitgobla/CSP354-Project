@@ -58,7 +58,7 @@ class ActivitySelector(Activity):
         LOGGER.debug("Starting activity selector")
         while not self.is_stopped():
             self.left_display.display_number(self.current_activity_index + 1)
-            self.right_display.display_text(self.activities[self.current_activity_index].name)
+            self.right_display.image = self.activities[self.current_activity_index].image
 
             if self.button.is_pressed():
                 self.button.wait_for_release()
@@ -73,7 +73,6 @@ class ActivitySelector(Activity):
                     self.activities[self.current_activity_index].join()
                 else:
                     self.current_activity_index = (self.current_activity_index + 1) % len(self.activities)
-                    self.left_display.display_text(self.activities[self.current_activity_index].name)
                     LOGGER.debug("Changing activity to %s", self.activities[self.current_activity_index])
 
             time.sleep(0.1)

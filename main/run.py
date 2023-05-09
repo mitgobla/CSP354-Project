@@ -4,6 +4,8 @@ Author: Benjamin Dodd (1901386)
 """
 
 import sys
+from os import path
+import cv2 as cv
 
 from main import LOGGER, IS_RASPBERRY_PI, ARGS
 
@@ -22,6 +24,8 @@ from main.activities.activity_selector import ActivitySelector
 from main.threading.worker_manager import WorkerManager
 from main.threading.worker_thread import Worker
 
+ACTIVITY_IMAGE_PATH = path.join("res", "activity")
+
 WORKER_MANAGER = WorkerManager()
 
 Worker.set_manager(WORKER_MANAGER)
@@ -36,9 +40,15 @@ VIDEO_FEED = VideoFeed()
 GESTURE_DETECTION = GestureDetection()
 EMOTION_DETECTION = EmotionDetection()
 
+CLOCK_ACTIVITY_IMAGE = cv.imread(path.join(ACTIVITY_IMAGE_PATH, "clock.png"))
 CLOCK_ACTIVITY = ClockActivity(LEFT_DISPLAY, RIGHT_DISPLAY, BUTTON)
+CLOCK_ACTIVITY.image = CLOCK_ACTIVITY_IMAGE
+EMOTION_REACTION_ACTIVITY_IMAGE = cv.imread(path.join(ACTIVITY_IMAGE_PATH, "emotion_reaction.png"))
 EMOTION_REACTION_ACTIVITY = EmotionReactionActivity(LEFT_DISPLAY, RIGHT_DISPLAY, EMOTION_DETECTION, VIDEO_FEED, STEPPER_MOTOR)
+EMOTION_REACTION_ACTIVITY.image = EMOTION_REACTION_ACTIVITY_IMAGE
+NUMBER_GUESSING_ACTIVITY_IMAGE = cv.imread(path.join(ACTIVITY_IMAGE_PATH, "number_guessing.png"))
 NUMBER_GUESSING_ACTIVITY = NumberGuessingActivity(LEFT_DISPLAY, RIGHT_DISPLAY, VIDEO_FEED, GESTURE_DETECTION)
+NUMBER_GUESSING_ACTIVITY.image = NUMBER_GUESSING_ACTIVITY_IMAGE
 
 ACTIVITIES = [CLOCK_ACTIVITY, EMOTION_REACTION_ACTIVITY, NUMBER_GUESSING_ACTIVITY]
 ACTIVITY_SELECTOR = ActivitySelector(ACTIVITIES, LEFT_DISPLAY, RIGHT_DISPLAY, BUTTON)
