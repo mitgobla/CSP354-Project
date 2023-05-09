@@ -16,6 +16,9 @@ from main.button.button import Button
 from main.threading.worker_manager import WorkerManager
 from main.threading.worker_thread import Worker
 
+START_TIME = 8
+STOP_TIME = 16
+
 class StopActivity(Worker):
     """
     Worker that will stop the current activity if the button is pressed for 8 seconds.
@@ -31,7 +34,7 @@ class StopActivity(Worker):
         while not self.is_stopped():
             if self.button.is_pressed():
                 self.button.wait_for_release()
-                if self.button.has_been_pressed_for(8):
+                if self.button.has_been_pressed_for(STOP_TIME):
                     LOGGER.debug("Stopping activity %s", self.activity)
                     self.activity.stop()
                     self.stop()
@@ -59,10 +62,10 @@ class ActivitySelector(Activity):
 
             if self.button.is_pressed():
                 self.button.wait_for_release()
-                if self.button.has_been_pressed_for(8):
+                if self.button.has_been_pressed_for(STOP_TIME):
                     LOGGER.debug("Stopping activity selector")
                     self.stop()
-                elif self.button.has_been_pressed_for(3):
+                elif self.button.has_been_pressed_for(START_TIME):
                     LOGGER.debug("Starting activity %s", self.activities[self.current_activity_index])
                     self.activities[self.current_activity_index].start()
                     stop_activity = StopActivity(self.activities[self.current_activity_index], self.button)
