@@ -74,7 +74,7 @@ class StepperMotor:
             direction = StepperMotorDirection.TURN_CLOCKWISE
         self.worker = StepperMotorWorker(self, direction, steps)
         self.worker.start()
-        LOGGER.debug("Stepper motor rotated to %d degrees", degrees)
+        # LOGGER.debug("Stepper motor rotated to %d degrees", degrees)
 
     def step_clockwise(self, steps: int = 1):
         """Step the stepper motor clockwise.
@@ -87,7 +87,7 @@ class StepperMotor:
 
         self.worker = StepperMotorWorker(self, StepperMotorDirection.TURN_CLOCKWISE, steps)
         self.worker.start()
-        LOGGER.debug("Stepper motor stepped clockwise %d steps", steps)
+        # LOGGER.debug("Stepper motor stepped clockwise %d steps", steps)
 
     def step_anticlockwise(self, steps: int = 1):
         """Step the stepper motor anticlockwise.
@@ -100,7 +100,7 @@ class StepperMotor:
 
         self.worker = StepperMotorWorker(self, StepperMotorDirection.TURN_ANTICLOCKWISE, steps)
         self.worker.start()
-        LOGGER.debug("Stepper motor stepped anticlockwise %d steps", steps)
+        # LOGGER.debug("Stepper motor stepped anticlockwise %d steps", steps)
 
 class StepperMotorWorker(Worker):
     """
