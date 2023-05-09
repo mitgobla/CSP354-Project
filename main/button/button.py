@@ -69,11 +69,11 @@ class Button:
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-        if not EMULATION:
-            GPIO.add_event_detect(self.pin, GPIO.BOTH, callback = self._update_state, bouncetime = 200)
+        GPIO.add_event_detect(self.pin, GPIO.BOTH, callback = self._update_state, bouncetime = 200)
 
     def _update_state(self):
         with self._lock:
+            LOGGER.debug(f"Button {self.name} has been pressed")
             self._state = not GPIO.input(self.pin)
             if self._state:
                 self.start_press_time = time.time()
