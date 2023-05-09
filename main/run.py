@@ -22,10 +22,6 @@ from main.activities.activity_selector import ActivitySelector
 from main.threading.worker_manager import WorkerManager
 from main.threading.worker_thread import Worker
 
-from main.ui.run import MainWindow
-
-
-
 WORKER_MANAGER = WorkerManager()
 
 Worker.set_manager(WORKER_MANAGER)
@@ -60,6 +56,7 @@ def raspberry_pi_main():
 
 def emulator_main():
     from PyQt5.QtWidgets import QApplication
+    from main.ui.run import MainWindow
     APPLICATION = QApplication(sys.argv)
     WINDOW = MainWindow()
     """
