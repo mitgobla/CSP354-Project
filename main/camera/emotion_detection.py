@@ -124,7 +124,11 @@ class EmotionDetectionWorker(Worker):
         try:
             self._running = True
             dominant_emotion, _ = DETECTOR.top_emotion(self.emotion_detection.image)
-            face_position = DETECTOR.find_faces(self.emotion_detection.image)[0]
+            faces = DETECTOR.find_faces(self.emotion_detection.image)
+            if len(faces) > 0:
+                face_position = faces[0]
+            else:
+                face_position = [320, 240, 0, 0]
             self.emotion_detection.current_emotion = dominant_emotion
             self.emotion_detection.face_position = face_position
         except cv.error:
