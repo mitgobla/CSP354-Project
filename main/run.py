@@ -4,7 +4,6 @@ Author: Benjamin Dodd (1901386)
 """
 
 import sys
-from PyQt5.QtWidgets import QApplication
 
 from main import LOGGER, IS_RASPBERRY_PI, ARGS
 
@@ -59,10 +58,10 @@ def raspberry_pi_main():
     WORKER_MANAGER.stop_all_workers()
     LOGGER.info("Application stopped on Raspberry Pi")
 
-APPLICATION = QApplication(sys.argv)
-WINDOW = MainWindow()
-
 def emulator_main():
+    from PyQt5.QtWidgets import QApplication
+    APPLICATION = QApplication(sys.argv)
+    WINDOW = MainWindow()
     """
     Main function to run the application in an emulator
     """
