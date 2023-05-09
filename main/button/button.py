@@ -47,7 +47,7 @@ class Button:
 
         self.name = name
         self.pin = pin
-        self.start_press_time = 0
+        self._start_press_time = 0
 
         self._lock = Lock()
         self._state = False
@@ -96,6 +96,14 @@ class Button:
         """
         with self._lock:
             return self._start_press_time
+
+    @start_press_time.setter
+    def start_press_time(self, value):
+        """
+        Set the time the button was pressed.
+        """
+        with self._lock:
+            self._start_press_time = value
 
     def is_pressed(self):
         """
