@@ -16,8 +16,8 @@ from main.button.button import Button
 from main.threading.worker_manager import WorkerManager
 from main.threading.worker_thread import Worker
 
-START_TIME = 8
-STOP_TIME = 16
+START_TIME = 3
+STOP_TIME = 6
 
 class StopActivity(Worker):
     """
