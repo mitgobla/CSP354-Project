@@ -71,7 +71,7 @@ class Button:
         GPIO.setup(self.pin, GPIO.IN, pull_up_down = GPIO.PUD_UP)
         GPIO.add_event_detect(self.pin, GPIO.BOTH, callback = self._update_state, bouncetime = 200)
 
-    def _update_state(self):
+    def _update_state(self, channel):
         with self._lock:
             LOGGER.debug(f"Button {self.name} has been pressed")
             self._state = not GPIO.input(self.pin)
