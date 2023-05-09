@@ -128,7 +128,7 @@ class EmotionDetectionWorker(Worker):
             if len(faces) > 0:
                 face_position = faces[0]
             else:
-                face_position = [320, 240, 0, 0]
+                face_position = None
             self.emotion_detection.current_emotion = dominant_emotion
             self.emotion_detection.face_position = face_position
         except cv.error:
