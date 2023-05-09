@@ -67,7 +67,7 @@ class Button:
         Set up the GPIO pins for the button.
         """
         GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BOARD)
+        GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin, GPIO.IN, pull_up_down = GPIO.PUD_UP)
         if not EMULATION:
             GPIO.add_event_detect(self.pin, GPIO.BOTH, callback = self._update_state, bouncetime = 200)

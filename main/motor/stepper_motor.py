@@ -33,7 +33,7 @@ class StepperMotor:
     Driver class for stepper motors.
     """
 
-    def __init__(self, in1: int = 11, in2: int = 13, in3: int = 15, in4: int = 16, speed: float = 0.0005):
+    def __init__(self, in1: int = 17, in2: int = 27, in3: int = 22, in4: int = 23, speed: float = 0.0005):
         """Create a new instance of the StepperMotor class."""
         self.in1 = in1
         self.in2 = in2
@@ -51,7 +51,7 @@ class StepperMotor:
         Set up the GPIO pins for the stepper motor.
         """
         GPIO.setwarnings(False)
-        GPIO.setmode(GPIO.BOARD)
+        GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.in1, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(self.in2, GPIO.OUT, initial=GPIO.LOW)
         GPIO.setup(self.in3, GPIO.OUT, initial=GPIO.LOW)
