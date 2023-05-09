@@ -70,6 +70,7 @@ class ActivitySelector(Activity):
                     self.activities[self.current_activity_index].join()
                 else:
                     self.current_activity_index = (self.current_activity_index + 1) % len(self.activities)
+                    self.left_display.display_text(self.activities[self.current_activity_index].name)
                     LOGGER.debug("Changing activity to %s", self.activities[self.current_activity_index])
 
             time.sleep(0.1)
