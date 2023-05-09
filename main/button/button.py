@@ -36,6 +36,7 @@ class ButtonEmulator(Worker):
                 self.button.start_press_time = time.time()
             else:
                 self.button._state = False
+
 class Button:
     """
     Driver class for a button.
@@ -51,6 +52,9 @@ class Button:
         self._lock = Lock()
         self._state = False
         self._setup()
+
+        self.worker = ButtonWorker(self)
+        self.worker.start()
 
         if EMULATION:
             self.emulator = ButtonEmulator(self)
@@ -69,14 +73,12 @@ class Button:
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self.pin, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-        GPIO.add_event_detect(self.pin, GPIO.BOTH, callback = self._update_state, bouncetime = 200)
+        # GPIO.add_event_detect(self.pin, GPIO.BOTH, callback = self._update_state, bouncetime = 200)
 
-    def _update_state(self, channel):
+    def _update_state(self, state: bool):
         with self._lock:
-            LOGGER.debug(f"Button {self.name} has been pressed")
-            self._state = not GPIO.input(self.pin)
-            if self._state:
-                self.start_press_time = time.time()
+            # LOGGER.debug(f"Button {self.name} has been pressed")
+            self._state = state
 
 
     @property
@@ -98,7 +100,7 @@ class Button:
         Wait for the button to be pressed.
         """
         while not self.state:
-            pass
+            time.sleep(0.1)
         LOGGER.debug(f"Button {self.name} has been pressed")
 
     def wait_for_release(self):
@@ -106,7 +108,7 @@ class Button:
         Wait for the button to be released.
         """
         while self.state:
-            pass
+            time.sleep(0.1)
         LOGGER.debug(f"Button {self.name} has been released")
 
     def has_been_pressed_for(self, seconds: float):
@@ -115,3 +117,20 @@ class Button:
         """
         LOGGER.debug(f"Button {self.name} has been pressed for {time.time() - self.start_press_time} seconds")
         return time.time() - self.start_press_time >= seconds
+
+class ButtonWorker(Worker):
+
+    def __init__(self, button: Button):
+        super().__init__()
+        self.button = button
+
+    def work(self):
+        while not self.is_stopped():
+            if GPIO.input(self.button.pin):
+                self.button._update_state(False)
+            else:
+                self.button._update_state(True)
+                self.button.start_press_time = time.time()
+                while not GPIO.input(self.button.pin) and not self.is_stopped():
+                    time.sleep(0.1)
+            time.sleep(0.1)
